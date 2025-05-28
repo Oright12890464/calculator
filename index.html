@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
@@ -121,7 +121,7 @@
     document.getElementById('preparedTotal').value = p1 + p2;
   }
 
-  // 左邊退料計算
+  // 左邊退料計算 (固定顯示三行，沒值就0)
   function calculateLeft() {
     const prepared = parseInt(document.getElementById('preparedTotal').value) || 0;
     const workOrder = parseInt(document.getElementById('workOrder').value) || 0;
@@ -148,15 +148,15 @@
       badReturn = blueReturn;
     }
 
-    // 不顯示0，過濾顯示結果文字
-    let outputLines = [];
-    if (requirePick !== 0) outputLines.push(`領料單：${requirePick}`);
-    if (goodReturn !== 0) outputLines.push(`藍單良品：${goodReturn}`);
-    if (badReturn !== 0) outputLines.push(`藍單不良品：${badReturn}`);
+    requirePick = requirePick > 0 ? requirePick : 0;
+    goodReturn = goodReturn > 0 ? goodReturn : 0;
+    badReturn = badReturn > 0 ? badReturn : 0;
 
-    if (outputLines.length === 0) {
-      outputLines.push('無需退料');
-    }
+    const outputLines = [
+      `領料單: ${requirePick}`,
+      `藍單良品: ${goodReturn}`,
+      `藍單不良品: ${badReturn}`
+    ];
 
     const leftResultDiv = document.getElementById('leftResult');
     leftResultDiv.textContent = outputLines.join('\n');
