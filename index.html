@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>多工具計算器</title>
+  <title>阿哲製作2.0</title>
   <style>
     body {
       font-family: "Microsoft JhengHei", sans-serif;
@@ -154,14 +154,14 @@
 
   <div class="container">
     <div class="tab-buttons">
-      <button onclick="showTab('returnCalculator')" class="active">貼紙＋退料計算器</button>
-      <button onclick="showTab('prepCalculator')">數量換算工具</button>
+      <button onclick="showTab('returnCalculator')" class="active">退料換算</button>
+      <button onclick="showTab('prepCalculator')">數量換算</button>
     </div>
 
-    <!-- 貼紙＋退料計算器 -->
+    <!-- 退料換算 -->
     <div id="returnCalculator">
-      <h2>貼紙＋退料計算器</h2>
-      <label>原始總重：
+      <h2>退料換算</h2>
+      <label>原始重量：
         <input type="number" id="totalWeight" step="any" min="0" oninput="calculateRightAuto()">
       </label>
       <label>軸心重：
@@ -213,9 +213,9 @@
       <div class="result" id="leftResult" style="display:none;"></div>
     </div>
 
-    <!-- 數量換算工具 -->
+    <!-- 數量換算 -->
 <div id="prepCalculator" style="display:none;">
-  <h2>數量換算工具</h2>
+  <h2>數量換算</h2>
   <label for="total">數量</label>
   <input type="number" id="total" min="1" placeholder="請輸入總數量" />
 
@@ -263,13 +263,14 @@
     });
 
     document.querySelectorAll('.tab-buttons button').forEach(btn => {
-      btn.classList.toggle('active', btn.textContent.includes(tabId === 'prepCalculator' ? '備料換算工具' : '貼紙＋退料計算器'));
+      btn.classList.toggle('active', btn.textContent.includes(tabId === 'prepCalculator' ? '數量換算' : '退料換算'));
     });
   }
 
-  // 初始顯示貼紙＋退料計算器
+  // 初始顯示介面退料換算
   showTab('returnCalculator');
 
+ //數量換算邏輯
         function updateResult() {
             const total = parseInt(totalInput.value);
             const prep = prepInput.value === '' ? null : parseInt(prepInput.value);
@@ -410,7 +411,7 @@
       calculateRightAuto();
     }
   }
-
+ //退料邏輯
   function calculateLeft() {
     const prepared = parseInt(document.getElementById('preparedTotal').value) || 0;
     const workOrder = parseInt(document.getElementById('workOrder').value) || 0;
