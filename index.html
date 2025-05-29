@@ -6,152 +6,132 @@
   <title>阿哲製作2.0</title>
   <style>
     body {
-      font-family: "Microsoft JhengHei", sans-serif;
-      background: #f5f5f5;
-      padding: 2rem;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
+      font-family: "Microsoft JhengHei", sans-serif; /* 設定字體 */
+      background: #f5f5f5; /* 背景顏色 */
+      padding: 2rem; /* 外邊距 */
+      display: flex; /* 使用彈性布局 */
+      justify-content: center; /* 水平置中 */
+      align-items: flex-start; /* 垂直置頂 */
+      min-height: 100vh; /* 最小高度為視窗高度 */
     }
     .container {
-      width: 100%;
+      width: 100%; /* 寬度為100% */
       max-width: 400px; /* 最大寬度 */
-      background: white;
-      padding: 2rem 2.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      box-sizing: border-box;
+      background: white; /* 背景顏色 */
+      padding: 2rem 2.5rem; /* 內邊距 */
+      border-radius: 12px; /* 圓角 */
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* 陰影效果 */
+      box-sizing: border-box; /* 包含內邊距和邊框的計算 */
     }
     h2 {
-      text-align: center;
-      margin-bottom: 1.5rem;
-      color: #222;
+      text-align: center; /* 標題置中 */
+      margin-bottom: 1.5rem; /* 下邊距 */
+      color: #222; /* 字體顏色 */
     }
     .tab-buttons {
-      display: flex;
-      justify-content: space-between; /* 使按鈕均勻分佈 */
-      margin-bottom: 20px;
+      display: flex; /* 使用彈性布局 */
+      justify-content: space-between; /* 按鈕均勻分佈 */
+      margin-bottom: 20px; /* 下邊距 */
     }
     .tab-buttons button {
-      flex: 1; /* 使按鈕填滿可用空間 */
-      padding: 10px;
-      border: 2px solid #4CAF50;
-      background-color: white;
-      color: #4CAF50;
-      border-radius: 5px;
-      cursor: pointer;
-      margin: 0 5px; /* 使按鈕之間有間距 */
-      transition: background-color 0.3s, color 0.3s;
+      flex: 1; /* 按鈕填滿可用空間 */
+      padding: 10px; /* 內邊距 */
+      border: 2px solid #4CAF50; /* 邊框顏色 */
+      background-color: white; /* 背景顏色 */
+      color: #4CAF50; /* 字體顏色 */
+      border-radius: 5px; /* 圓角 */
+      cursor: pointer; /* 游標樣式 */
+      margin: 0 5px; /* 按鈕間距 */
+      transition: background-color 0.3s, color 0.3s; /* 懸停效果 */
     }
     .tab-buttons button.active {
-      background-color: #4CAF50;
-      color: white;
+      background-color: #4CAF50; /* 活躍按鈕背景顏色 */
+      color: white; /* 活躍按鈕字體顏色 */
     }
     label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: 600;
-      color: #444;
+      display: block; /* 占據整行 */
+      margin-top: 1rem; /* 上邊距 */
+      font-weight: 600; /* 字體粗細 */
+      color: #444; /* 字體顏色 */
     }
     input[type=number] {
-      width: 100%;
-      padding: 0.5rem 0.75rem;
-      margin-top: 0.25rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-      box-sizing: border-box;
-      transition: border-color 0.3s;
+      width: 100%; /* 寬度為100% */
+      padding: 0.5rem 0.75rem; /* 內邊距 */
+      margin-top: 0.25rem; /* 上邊距 */
+      border: 1px solid #ccc; /* 邊框顏色 */
+      border-radius: 8px; /* 圓角 */
+      font-size: 1rem; /* 字體大小 */
+      box-sizing: border-box; /* 包含內邊距和邊框的計算 */
+      transition: border-color 0.3s; /* 邊框顏色變化效果 */
     }
     input[type=number]:focus {
-      outline: none;
-      border-color: #4CAF50;
-      box-shadow: 0 0 6px #4CAF50aa;
+      outline: none; /* 去除焦點輪廓 */
+      border-color: #4CAF50; /* 焦點邊框顏色 */
+      box-shadow: 0 0 6px #4CAF50aa; /* 焦點陰影效果 */
     }
     button {
-      margin-top: 15px;
-      padding: 12px;
-      font-size: 16px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 48%;
-      transition: background-color 0.3s ease;
+      margin-top: 15px; /* 上邊距 */
+      padding: 12px; /* 內邊距 */
+      font-size: 16px; /* 字體大小 */
+      background-color: #4CAF50; /* 背景顏色 */
+      color: white; /* 字體顏色 */
+      border: none; /* 無邊框 */
+      border-radius: 5px; /* 圓角 */
+      cursor: pointer; /* 游標樣式 */
+      width: 48%; /* 寬度 */
+      transition: background-color 0.3s ease; /* 懸停效果 */
     }
     button:hover {
-      background-color: #3a9d3a;
+      background-color: #3a9d3a; /* 懸停時的背景顏色 */
     }
     .result {
-      margin-top: 20px;
-      background: #e8f5e9;
-      border: 2px solid #4CAF50;
-      border-radius: 5px;
-      padding: 15px;
-      font-size: 16px;
-      color: #2e7d32;
-      white-space: pre-line;
+      margin-top: 20px; /* 上邊距 */
+      background: #e8f5e9; /* 背景顏色 */
+      border: 2px solid #4CAF50; /* 邊框顏色 */
+      border-radius: 5px; /* 圓角 */
+      padding: 15px; /* 內邊距 */
+      font-size: 16px; /* 字體大小 */
+      color: #2e7d32; /* 字體顏色 */
+      white-space: pre-line; /* 保留換行 */
     }
     .readonly {
-      background-color: #f4f4f4;
+      background-color: #f4f4f4; /* 只讀輸入框背景顏色 */
     }
     .button-group {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
+      display: flex; /* 使用彈性布局 */
+      justify-content: space-between; /* 按鈕均勻分佈 */
+      gap: 10px; /* 按鈕間距 */
+      flex-wrap: wrap; /* 允許換行 */
     }
-    .manual-checkbox, .x2-checkbox {
-      font-weight: normal;
-      display: inline-block;
-      margin-top: 5px;
-      font-size: 14px;
-      color: #555;
-      user-select: none;
+    .x2-container, .manual-checkbox {
+      display: flex; /* 使用彈性布局 */
+      align-items: center; /* 垂直居中 */
+      gap: 9px; /* 調整間距 */
+      margin-top: 10px; /* 上邊距 */
+      font-weight: normal; /* 字體粗細 */
+      font-size: 14px; /* 字體大小 */
+      color: #555; /* 字體顏色 */
     }
-    .x2-container {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 5px;
-      font-weight: normal;
-      font-size: 14px;
-      color: #555;
+    .x2-container input[type="checkbox"], .manual-checkbox input[type="checkbox"] {
+      transform: scale(1.5); /* 增大勾選框的大小 */
+      margin-top: 4px /* 清除任何上邊距 */
+      vertical-align: middle; /* 垂直對齊 */
     }
     @media (max-width: 480px) {
       h2 {
-        font-size: 20px;
+        font-size: 20px; /* 小螢幕上標題字體大小 */
       }
       button {
-        width: 100%;
-        margin-top: 10px;
+        width: 100%; /* 小螢幕上按鈕寬度 */
+        margin-top: 10px; /* 小螢幕上按鈕間距 */
       }
       .button-group {
-        flex-direction: column;
+        flex-direction: column; /* 小螢幕上按鈕垂直排列 */
       }
     }
-.button {
-  width: 100%; /* 設定寬度為 100% */
-  padding: 12px; /* 與其他按鈕一致的內邊距 */
-  font-size: 16px; /* 字體大小 */
-  background-color: #4CAF50; /* 背景顏色 */
-  color: white; /* 文字顏色 */
-  border: none; /* 無邊框 */
-  border-radius: 5px; /* 圓角 */
-  cursor: pointer; /* 游標樣式 */
-  transition: background-color 0.3s ease; /* 懸停效果 */
-}
-
-.button:hover {
-  background-color: #3a9d3a; /* 懸停時的背景顏色 */
-}
-
   </style>
 </head>
 <body>
-
   <div class="container">
     <div class="tab-buttons">
       <button onclick="showTab('returnCalculator')" class="active">退料換算</button>
@@ -179,8 +159,8 @@
       <label>貼紙備料數（批號1）：
         <input type="number" id="prepared1" min="0" oninput="updatePreparedTotal()">
         <span class="x2-container">
-          <input type="checkbox" id="x2Toggle"> ｘ２
-          <input type="checkbox" id="x12Toggle"> ｘ１２
+          <input type="checkbox" id="x2Toggle"> x２
+          <input type="checkbox" id="x12Toggle"> x１２
         </span>
       </label>
 
@@ -197,7 +177,7 @@
       <label>實際退料數：
         <input type="number" id="actualReturn" class="readonly" readonly>
         <span class="manual-checkbox">
-          <input type="checkbox" id="manualToggle" onclick="toggleManualInput()"> 手動(勾選時可自行輸入)
+          <input type="checkbox" id="manualToggle" onclick="toggleManualInput()">勾選時可自行輸入
         </span>
       </label>
 
