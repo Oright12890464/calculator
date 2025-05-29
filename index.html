@@ -1,275 +1,278 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>貼紙＋退料計算器</title>
+  <title>換算工具</title>
   <style>
     body {
-      font-family: sans-serif;
-      padding: 20px;
-      margin: 0;
-      background: #f0f0f0;
+      font-family: "Microsoft JhengHei", sans-serif;
+      background: #f5f5f5;
+      padding: 2rem;
       display: flex;
       justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
     }
-
     .container {
+      width: 360px;
       background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
-      width: 100%;
-      max-width: 400px;
+      padding: 2rem 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       box-sizing: border-box;
     }
-
     h2 {
-      color: #333;
-      margin-bottom: 15px;
       text-align: center;
-      font-size: 22px;
+      margin-bottom: 1.5rem;
+      color: #222;
     }
-
     label {
       display: block;
-      margin-top: 12px;
+      margin-top: 1rem;
       font-weight: 600;
-      font-size: 15px;
+      color: #444;
     }
-
     input[type=number] {
       width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      margin-top: 6px;
+      padding: 0.5rem 0.75rem;
+      margin-top: 0.25rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
       box-sizing: border-box;
-      border: 2px solid #4CAF50;
-      border-radius: 6px;
-      transition: border-color 0.3s ease;
+      transition: border-color 0.3s;
     }
-
     input[type=number]:focus {
-      border-color: #3a9d3a;
       outline: none;
+      border-color: #4CAF50;
+      box-shadow: 0 0 6px #4CAF50aa;
     }
-
-    button {
-      margin-top: 15px;
-      padding: 12px;
-      font-size: 16px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 48%;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #3a9d3a;
-    }
-
-    .result {
-      margin-top: 20px;
-      background: #e8f5e9;
-      border: 2px solid #4CAF50;
-      border-radius: 5px;
-      padding: 15px;
-      font-size: 16px;
-      color: #2e7d32;
-      white-space: pre-line;
-    }
-
-    .readonly {
-      background-color: #f4f4f4;
-    }
-
-    .button-group {
+    .buttons {
+      margin-top: 1.8rem;
       display: flex;
       justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
+      align-items: center;
     }
-
-    .manual-checkbox {
-      font-weight: normal;
-      display: inline-block;
-      margin-top: 5px;
-      font-size: 14px;
-      color: #555;
+    button {
+      flex: 0 0 48%;
+      padding: 0.5rem 0;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      color: white;
+      user-select: none;
+      transition: background-color 0.3s;
     }
-
-    @media (max-width: 480px) {
-      h2 {
-        font-size: 20px;
-      }
-
-      button {
-        width: 100%;
-        margin-top: 10px;
-      }
-
-      .button-group {
-        flex-direction: column;
-      }
+    button.calc {
+      background-color: #4CAF50;
+    }
+    button.calc:hover {
+      background-color: #45a049;
+    }
+    button.clear {
+      background-color: #f44336;
+      text-align: center;
+    }
+    button.clear:hover {
+      background-color: #d73727;
+    }
+    #result {
+      margin-top: 1.6rem;
+      font-weight: 600;
+      color: #333;
+      min-height: 2.2em;
+      word-break: break-word;
+    }
+    #result.error {
+      color: #d93025;
+      font-weight: 700;
     }
   </style>
 </head>
 <body>
-
   <div class="container">
-    <h2>貼紙＋退料 計算工具</h2>
+    <h2>備料換算工具</h2>
+    <label for="total">數量</label>
+    <input type="number" id="total" min="1" placeholder="請輸入總數量" />
 
-    <!-- 貼紙區 -->
-    <label>原始總重：
-      <input type="number" id="totalWeight" step="any" min="0" oninput="calculateRightAuto()">
-    </label>
-    <label>軸心重：
-      <input type="number" id="coreWeight" step="any" min="0" oninput="calculateRightAuto()">
-    </label>
-    <label>原始捲數：
-      <input type="number" id="originalRolls" min="0" oninput="calculateRightAuto()">
-    </label>
-    <label>退料重量：
-      <input type="number" id="returnWeight" step="any" min="0" oninput="calculateRightAuto()">
-    </label>
-    <label>自動換算貼紙數：
-      <input type="number" id="calculatedResult" class="readonly" readonly>
-    </label>
+    <label for="prep">備料數量</label>
+    <input type="number" id="prep" min="0" placeholder="備料數量" />
 
-    <hr>
+    <label for="unit">單位</label>
+    <input type="number" id="unit" min="1" placeholder="每箱單位" />
 
-    <!-- 退料區 -->
-    <label>貼紙備料數（批號1）：
-      <input type="number" id="prepared1" min="0" oninput="updatePreparedTotal()">
-    </label>
-    <label>貼紙備料數（批號2）：
-      <input type="number" id="prepared2" min="0" oninput="updatePreparedTotal()">
-    </label>
-    <label>貼紙備料總數：
-      <input type="number" id="preparedTotal" class="readonly" readonly>
-    </label>
-    <label>工單製令數：
-      <input type="number" id="workOrder" min="0">
-    </label>
-    
-    <label>實際退料數：
-      <input type="number" id="actualReturn" class="readonly" readonly>
-      <span class="manual-checkbox">
-        <input type="checkbox" id="manualToggle" onclick="toggleManualInput()"> 手動(勾選後可自行輸入)
-      </span>
-    </label>
+    <label for="perPallet">板數</label>
+    <input type="number" id="perPallet" min="1" placeholder="每板單位" />
 
-    <label>藍單退料數：
-      <input type="number" id="blueReturn" min="0">
-    </label>
-
-    <div class="button-group">
-      <button onclick="calculateLeft()">計算</button>
-      <button onclick="clearAll()">清除</button>
+    <div class="buttons">
+      <button class="calc" onclick="calculate()">計算</button>
+      <button class="clear" onclick="clearFields()">清除</button>
     </div>
 
-    <div class="result" id="leftResult" style="display:none;"></div>
+    <div id="result"></div>
   </div>
 
 <script>
-  function updatePreparedTotal() {
-    const p1 = parseInt(document.getElementById('prepared1').value) || 0;
-    const p2 = parseInt(document.getElementById('prepared2').value) || 0;
-    document.getElementById('preparedTotal').value = p1 + p2;
+function calculate() {
+  const totalInput = document.getElementById('total');
+  const prepInput = document.getElementById('prep');
+  const unitInput = document.getElementById('unit');
+  const perPalletInput = document.getElementById('perPallet');
+  const resultDiv = document.getElementById('result');
+
+  // 取值並轉整數
+  const total = parseInt(totalInput.value);
+  const prep = prepInput.value === '' ? null : parseInt(prepInput.value);
+  const unit = unitInput.value === '' ? null : parseInt(unitInput.value);
+  const perPallet = perPalletInput.value === '' ? null : parseInt(perPalletInput.value);
+
+  // 清除錯誤樣式
+  resultDiv.classList.remove('error');
+  resultDiv.textContent = '';
+
+  // 總數必填檢查
+  if (isNaN(total) || total <= 0) {
+    resultDiv.classList.add('error');
+    resultDiv.textContent = '請輸入有效的數量（總數），且必須大於0';
+    return;
   }
 
-  function calculateRightAuto() {
-    const totalWeight = parseFloat(document.getElementById('totalWeight').value) || 0;
-    const coreWeight = parseFloat(document.getElementById('coreWeight').value) || 0;
-    const originalRolls = parseInt(document.getElementById('originalRolls').value) || 0;
-    const returnWeight = parseFloat(document.getElementById('returnWeight').value) || 0;
-    const manualMode = document.getElementById('manualToggle').checked;
-
-    if (totalWeight <= coreWeight || originalRolls <= 0 || returnWeight < coreWeight) {
-      document.getElementById('calculatedResult').value = '';
-      if (!manualMode) {
-        document.getElementById('actualReturn').value = '';
-      }
+  // 備料數檢查（若填）不能大於總數量
+  if (prep !== null) {
+    if (prep < 0) {
+      resultDiv.classList.add('error');
+      resultDiv.textContent = '備料數量不可小於0';
       return;
     }
-
-    const val1 = totalWeight - coreWeight;
-    const val2 = originalRolls / val1;
-    const rawResult = (returnWeight - coreWeight) * val2;
-    const fractional = rawResult % 1;
-    const finalResult = fractional > 0 ? Math.ceil(rawResult) : rawResult;
-
-    document.getElementById('calculatedResult').value = finalResult;
-    if (!manualMode) {
-      document.getElementById('actualReturn').value = finalResult;
+    if (prep > total) {
+      resultDiv.classList.add('error');
+      resultDiv.textContent = '備料數量不可大於總數量';
+      return;
     }
   }
 
-  function toggleManualInput() {
-    const checkbox = document.getElementById('manualToggle');
-    const actualInput = document.getElementById('actualReturn');
-
-    if (checkbox.checked) {
-      actualInput.removeAttribute('readonly');
-      actualInput.classList.remove('readonly');
-    } else {
-      actualInput.setAttribute('readonly', true);
-      actualInput.classList.add('readonly');
-      calculateRightAuto();
+  // 單位（每箱幾支）檢查（若填）
+  if (unit !== null) {
+    if (unit <= 0) {
+      resultDiv.classList.add('error');
+      resultDiv.textContent = '單位（每箱幾支）必須大於0';
+      return;
+    }
+    if (unit > total) {
+      resultDiv.classList.add('error');
+      resultDiv.textContent = '單位（每箱幾支）不可大於總數量';
+      return;
     }
   }
 
-  function calculateLeft() {
-    const prepared = parseInt(document.getElementById('preparedTotal').value) || 0;
-    const workOrder = parseInt(document.getElementById('workOrder').value) || 0;
-    const actualReturn = parseInt(document.getElementById('actualReturn').value) || 0;
-    const blueReturn = parseInt(document.getElementById('blueReturn').value) || 0;
-
-    const shouldReturn = prepared - workOrder;
-    let goodReturn = 0, badReturn = 0, requirePick = 0;
-
-    if (actualReturn > shouldReturn) {
-      goodReturn = actualReturn - shouldReturn;
-      badReturn = blueReturn - goodReturn;
-    } else if (actualReturn < shouldReturn) {
-      requirePick = shouldReturn - actualReturn;
-      badReturn = blueReturn + requirePick;
-    } else {
-      badReturn = blueReturn;
+  // 每板幾支檢查（若填）
+  if (perPallet !== null) {
+    if (perPallet <= 0) {
+      resultDiv.classList.add('error');
+      resultDiv.textContent = '每板幾支必須大於0';
+      return;
     }
-
-    requirePick = requirePick > 0 ? requirePick : 0;
-    goodReturn = goodReturn > 0 ? goodReturn : 0;
-    badReturn = badReturn > 0 ? badReturn : 0;
-
-    const outputLines = [
-      領料單: ${requirePick},
-      藍單良品: ${goodReturn},
-      藍單不良品: ${badReturn}
-    ];
-
-    const leftResultDiv = document.getElementById('leftResult');
-    leftResultDiv.textContent = outputLines.join('\n');
-    leftResultDiv.style.display = 'block';
+    if (perPallet > total) {
+      resultDiv.classList.add('error');
+      resultDiv.textContent = '每板幾支不可大於總數量';
+      return;
+    }
   }
 
-  function clearAll() {
-    const ids = ['prepared1', 'prepared2', 'preparedTotal', 'workOrder', 'actualReturn', 'blueReturn',
-                 'totalWeight', 'coreWeight', 'originalRolls', 'returnWeight', 'calculatedResult'];
-    ids.forEach(id => document.getElementById(id).value = '');
-    document.getElementById('manualToggle').checked = false;
-    toggleManualInput();
-    document.getElementById('leftResult').textContent = '';
-    document.getElementById('leftResult').style.display = 'none';
+  // 計算結果字串變數
+  let result = '';
+
+  // 有備料數時換算備料與庫存
+  if (prep !== null && unit !== null && perPallet !== null) {
+    const prepPallets = Math.floor(prep / perPallet);
+    const prepRemain1 = prep % perPallet;
+    const prepBoxes = Math.floor(prepRemain1 / unit);
+    const prepUnits = prepRemain1 % unit;
+
+    const stock = total - prep;
+    const stockPallets = Math.floor(stock / perPallet);
+    const stockRemain1 = stock % perPallet;
+    const stockBoxes = Math.floor(stockRemain1 / unit);
+    const stockUnits = stockRemain1 % unit;
+
+    // 備料字串組合，只顯示非0單位
+    let prepStr = '';
+    if (prepPallets > 0) prepStr += `${prepPallets}板 `;
+    if (prepBoxes > 0) prepStr += `${prepBoxes}箱 `;
+    if (prepUnits > 0) prepStr += `${prepUnits}支`;
+    prepStr = prepStr.trim();
+    if (prepStr === '') prepStr = '0支';
+
+    // 庫存字串組合，只顯示非0單位
+    let stockStr = '';
+    if (stockPallets > 0) stockStr += `${stockPallets}板 `;
+    if (stockBoxes > 0) stockStr += `${stockBoxes}箱 `;
+    if (stockUnits > 0) stockStr += `${stockUnits}支`;
+    stockStr = stockStr.trim();
+    if (stockStr === '') stockStr = '0支';
+
+    result = `備料數量：${prepStr}<br>庫存數量：${stockStr}`;
+  }
+  // 只填總數，且有填單位與板數
+  else if (unit !== null && perPallet !== null) {
+    const pallets = Math.floor(total / perPallet);
+    const remain1 = total % perPallet;
+    const boxes = Math.floor(remain1 / unit);
+    const units = remain1 % unit;
+
+    let resStr = '';
+    if (pallets > 0) resStr += `${pallets}板 `;
+    if (boxes > 0) resStr += `${boxes}箱 `;
+    if (units > 0) resStr += `${units}支`;
+    resStr = resStr.trim();
+    if (resStr === '') resStr = '0支';
+
+    result = `庫存數量：${resStr}`;
+  }
+  // 只填總數，且有填單位（箱）沒填板數
+  else if (unit !== null && perPallet === null) {
+    const boxes = Math.floor(total / unit);
+    const units = total % unit;
+
+    let resStr = '';
+    if (boxes > 0) resStr += `${boxes}箱 `;
+    if (units > 0) resStr += `${units}支`;
+    resStr = resStr.trim();
+    if (resStr === '') resStr = '0支';
+
+    result = `庫存數量：${resStr}`;
+  }
+  // 只填總數，且有填板數沒填箱
+  else if (unit === null && perPallet !== null) {
+    const pallets = Math.floor(total / perPallet);
+    const units = total % perPallet;
+
+    let resStr = '';
+    if (pallets > 0) resStr += `${pallets}板 `;
+    if (units > 0) resStr += `${units}支`;
+    resStr = resStr.trim();
+    if (resStr === '') resStr = '0支';
+
+    result = `庫存數量：${resStr}`;
+  }
+  // 只填總數，沒填箱數和板數，直接顯示支數
+  else {
+    result = `庫存數量：${total}支`;
   }
 
-  window.onload = function () {
-    toggleManualInput();
-  };
+  resultDiv.innerHTML = result;
+}
+
+function clearFields() {
+  document.getElementById('total').value = '';
+  document.getElementById('prep').value = '';
+  document.getElementById('unit').value = '';
+  document.getElementById('perPallet').value = '';
+  const resultDiv = document.getElementById('result');
+  resultDiv.textContent = '';
+  resultDiv.classList.remove('error');
+}
 </script>
-
 </body>
 </html>
