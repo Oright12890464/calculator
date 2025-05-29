@@ -179,8 +179,8 @@
       <label>貼紙備料數（批號1）：
         <input type="number" id="prepared1" min="0" oninput="updatePreparedTotal()">
         <span class="x2-container">
-          <input type="checkbox" id="x2Toggle"> x2(請確認製令備註)
-          <input type="checkbox" id="x12Toggle"> x12(70ml包專用)
+          <input type="checkbox" id="x2Toggle"> x2（請確認製令備註）
+          <input type="checkbox" id="x12Toggle"> x12（70ml專用）
         </span>
       </label>
 
@@ -411,7 +411,7 @@
       calculateRightAuto();
     }
   }
- //退料邏輯
+//退料邏輯
   function calculateLeft() {
     const prepared = parseInt(document.getElementById('preparedTotal').value) || 0;
     const workOrder = parseInt(document.getElementById('workOrder').value) || 0;
