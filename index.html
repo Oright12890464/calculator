@@ -175,6 +175,32 @@
   </div>
 
 <script>
+  function clearAll() {
+  const ids = [
+    'totalWeight', 'coreWeight', 'originalRolls', 'returnWeight', 'calculatedResult',
+    'prepared1', 'prepared2', 'preparedTotal', 'workOrder', 'actualReturn', 'blueReturn'
+  ];
+
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.value = '';
+    }
+  });
+
+  // 取消手動輸入模式
+  const manualToggle = document.getElementById('manualToggle');
+  if (manualToggle.checked) {
+    manualToggle.checked = false;
+    toggleManualInput(); // 重新鎖定 actualReturn 欄位
+  }
+
+  // 隱藏結果區塊
+  const leftResultDiv = document.getElementById('leftResult');
+  leftResultDiv.style.display = 'none';
+  leftResultDiv.textContent = '';
+}
+
   function updatePreparedTotal() {
     const p1 = parseInt(document.getElementById('prepared1').value) || 0;
     const p2 = parseInt(document.getElementById('prepared2').value) || 0;
