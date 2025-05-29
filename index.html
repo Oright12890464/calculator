@@ -3,23 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>退料與貼紙計算器</title>
+  <title>貼紙＋退料計算器</title>
   <style>
     body {
       font-family: sans-serif;
       padding: 20px;
       background: #f0f0f0;
       display: flex;
-      gap: 40px;
       justify-content: center;
-      flex-wrap: wrap;
     }
     .container {
       background: white;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
-      width: 320px;
+      width: 360px;
     }
     h2 {
       color: #333;
@@ -68,10 +66,7 @@
       padding: 15px;
       font-size: 18px;
       color: #2e7d32;
-      min-height: 90px;
-      line-height: 1.5;
       white-space: pre-line;
-      user-select: none;
     }
     .readonly {
       background-color: #f4f4f4;
@@ -81,47 +76,105 @@
       justify-content: space-between;
       gap: 10px;
     }
+    .manual-checkbox {
+      font-weight: normal;
+      display: inline-block;
+      margin-top: 5px;
+      font-size: 14px;
+      color: #555;
+    }
   </style>
 </head>
 <body>
 
-  <div class="container" id="leftCalculator">
-    <h2>退料單計算器</h2>
+  <div class="container">
+    <h2>貼紙＋退料 計算工具</h2>
+
+    <!-- 貼紙區 -->
+    <label>原始總重：<input type="number" id="totalWeight" step="any" min="0" oninput="calculateRightAuto()"></label>
+    <label>軸心重：<input type="number" id="coreWeight" step="any" min="0" oninput="calculateRightAuto()"></label>
+    <label>原始捲數：<input type="number" id="originalRolls" min="0" oninput="calculateRightAuto()"></label>
+    <label>退料重量：<input type="number" id="returnWeight" step="any" min="0" oninput="calculateRightAuto()"></label>
+    <label>自動換算貼紙數：<input type="number" id="calculatedResult" class="readonly" readonly></label>
+
+    <hr>
+
+    <!-- 退料區 -->
     <label>貼紙備料數（批號1）：<input type="number" id="prepared1" min="0" oninput="updatePreparedTotal()"></label>
     <label>貼紙備料數（批號2）：<input type="number" id="prepared2" min="0" oninput="updatePreparedTotal()"></label>
     <label>貼紙備料總數：<input type="number" id="preparedTotal" class="readonly" readonly></label>
     <label>工單製令數：<input type="number" id="workOrder" min="0"></label>
-    <label>實際退料數：<input type="number" id="actualReturn" min="0"></label>
+    
+    <label>
+      實際退料數：
+      <input type="number" id="actualReturn" class="readonly" readonly>
+      <span class="manual-checkbox">
+        <input type="checkbox" id="manualToggle" onclick="toggleManualInput()"> 手動
+      </span>
+    </label>
+
     <label>藍單退料數：<input type="number" id="blueReturn" min="0"></label>
+
     <div class="button-group">
       <button onclick="calculateLeft()">計算</button>
-      <button onclick="clearLeft()">清除</button>
+      <button onclick="clearAll()">清除</button>
     </div>
+
     <div class="result" id="leftResult" style="display:none;"></div>
   </div>
 
-  <div class="container" id="rightCalculator">
-    <h2>貼紙計算器</h2>
-    <label>原始總重：<input type="number" id="totalWeight" step="any" min="0"></label>
-    <label>軸心重：<input type="number" id="coreWeight" step="any" min="0"></label>
-    <label>原始捲數：<input type="number" id="originalRolls" min="0"></label>
-    <label>退料重量：<input type="number" id="returnWeight" step="any" min="0"></label>
-    <div class="button-group">
-      <button onclick="calculateRight()">計算</button>
-      <button onclick="clearRight()">清除</button>
-    </div>
-    <div class="result" id="rightResult" style="display:none;"></div>
-  </div>
-
 <script>
-  // 左邊備料總數即時更新
+  // 備料總數即時更新
   function updatePreparedTotal() {
     const p1 = parseInt(document.getElementById('prepared1').value) || 0;
     const p2 = parseInt(document.getElementById('prepared2').value) || 0;
     document.getElementById('preparedTotal').value = p1 + p2;
   }
 
-  // 左邊退料計算 (固定顯示三行，沒值就0)
+  // 自動貼紙計算
+  function calculateRightAuto() {
+    const totalWeight = parseFloat(document.getElementById('totalWeight').value) || 0;
+    const coreWeight = parseFloat(document.getElementById('coreWeight').value) || 0;
+    const originalRolls = parseInt(document.getElementById('originalRolls').value) || 0;
+    const returnWeight = parseFloat(document.getElementById('returnWeight').value) || 0;
+    const manualMode = document.getElementById('manualToggle').checked;
+
+    if (totalWeight <= coreWeight || originalRolls <= 0 || returnWeight < coreWeight) {
+      document.getElementById('calculatedResult').value = '';
+      if (!manualMode) {
+        document.getElementById('actualReturn').value = '';
+      }
+      return;
+    }
+
+    const val1 = totalWeight - coreWeight;
+    const val2 = originalRolls / val1;
+    const rawResult = (returnWeight - coreWeight) * val2;
+    const fractional = rawResult % 1;
+    const finalResult = fractional > 0 ? Math.ceil(rawResult) : rawResult;
+
+    document.getElementById('calculatedResult').value = finalResult;
+    if (!manualMode) {
+      document.getElementById('actualReturn').value = finalResult;
+    }
+  }
+
+  // 切換是否手動輸入實際退料
+  function toggleManualInput() {
+    const checkbox = document.getElementById('manualToggle');
+    const actualInput = document.getElementById('actualReturn');
+
+    if (checkbox.checked) {
+      actualInput.removeAttribute('readonly');
+      actualInput.classList.remove('readonly');
+    } else {
+      actualInput.setAttribute('readonly', true);
+      actualInput.classList.add('readonly');
+      calculateRightAuto(); // 自動填值
+    }
+  }
+
+  // 退料計算
   function calculateLeft() {
     const prepared = parseInt(document.getElementById('preparedTotal').value) || 0;
     const workOrder = parseInt(document.getElementById('workOrder').value) || 0;
@@ -129,22 +182,15 @@
     const blueReturn = parseInt(document.getElementById('blueReturn').value) || 0;
 
     const shouldReturn = prepared - workOrder;
-
-    let goodReturn = 0;
-    let badReturn = 0;
-    let requirePick = 0;
+    let goodReturn = 0, badReturn = 0, requirePick = 0;
 
     if (actualReturn > shouldReturn) {
       goodReturn = actualReturn - shouldReturn;
       badReturn = blueReturn - goodReturn;
-      requirePick = 0;
     } else if (actualReturn < shouldReturn) {
       requirePick = shouldReturn - actualReturn;
-      goodReturn = 0;
       badReturn = blueReturn + requirePick;
     } else {
-      requirePick = 0;
-      goodReturn = 0;
       badReturn = blueReturn;
     }
 
@@ -163,63 +209,21 @@
     leftResultDiv.style.display = 'block';
   }
 
-  // 右邊貼紙計算器
-  function calculateRight() {
-    const totalWeight = parseFloat(document.getElementById('totalWeight').value) || 0;
-    const coreWeight = parseFloat(document.getElementById('coreWeight').value) || 0;
-    const originalRolls = parseInt(document.getElementById('originalRolls').value) || 0;
-    const returnWeight = parseFloat(document.getElementById('returnWeight').value) || 0;
-
-    if (totalWeight <= coreWeight) {
-      alert('原始總重必須大於軸心重');
-      return;
-    }
-    if (originalRolls <= 0) {
-      alert('原始捲數必須大於0');
-      return;
-    }
-    if (returnWeight < coreWeight) {
-      alert('退料重量應該大於或等於軸心重');
-      return;
-    }
-
-    // 貼紙計算流程
-    const val1 = totalWeight - coreWeight; // 1
-    const val2 = originalRolls / val1;     // 2
-    const rawResult = (returnWeight - coreWeight) * val2;  // 3
-
-    // 判斷進位：小數部分>0就進位，否則取整數
-    const fractional = rawResult % 1;
-    const finalResult = fractional > 0 ? Math.ceil(rawResult) : rawResult;
-
-    const rightResultDiv = document.getElementById('rightResult');
-    rightResultDiv.textContent = `實際數量: ${finalResult} 張`;
-    rightResultDiv.style.display = 'block';
+  // 清除所有欄位
+  function clearAll() {
+    const ids = ['prepared1', 'prepared2', 'preparedTotal', 'workOrder', 'actualReturn', 'blueReturn',
+                 'totalWeight', 'coreWeight', 'originalRolls', 'returnWeight', 'calculatedResult'];
+    ids.forEach(id => document.getElementById(id).value = '');
+    document.getElementById('manualToggle').checked = false;
+    toggleManualInput();
+    document.getElementById('leftResult').textContent = '';
+    document.getElementById('leftResult').style.display = 'none';
   }
 
-  // 左邊清除函式
-  function clearLeft() {
-    document.getElementById('prepared1').value = '';
-    document.getElementById('prepared2').value = '';
-    document.getElementById('preparedTotal').value = '';
-    document.getElementById('workOrder').value = '';
-    document.getElementById('actualReturn').value = '';
-    document.getElementById('blueReturn').value = '';
-    const leftResultDiv = document.getElementById('leftResult');
-    leftResultDiv.textContent = '';
-    leftResultDiv.style.display = 'none';
-  }
-
-  // 右邊清除函式
-  function clearRight() {
-    document.getElementById('totalWeight').value = '';
-    document.getElementById('coreWeight').value = '';
-    document.getElementById('originalRolls').value = '';
-    document.getElementById('returnWeight').value = '';
-    const rightResultDiv = document.getElementById('rightResult');
-    rightResultDiv.textContent = '';
-    rightResultDiv.style.display = 'none';
-  }
+  // 初始載入時設定狀態
+  window.onload = function () {
+    toggleManualInput();
+  };
 </script>
 
 </body>
