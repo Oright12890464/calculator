@@ -221,7 +221,6 @@
       calculateRightAuto();
     }
   }
-
 function calculateLeft() {
   const prepared = parseInt(document.getElementById('preparedTotal').value) || 0;
   const workOrder = parseInt(document.getElementById('workOrder').value) || 0;
@@ -229,12 +228,13 @@ function calculateLeft() {
   const blueReturn = parseInt(document.getElementById('blueReturn').value) || 0;
 
   const shouldReturn = prepared - workOrder;
-  let goodReturn = 0, badReturn = 0, requirePick = 0;
+  let goodReturn = 0, badReturn = 0, requirePick = 0, giftReturn = 0;
 
   if (actualReturn > shouldReturn) {
     goodReturn = actualReturn - shouldReturn;
     // ✅ 特殊邏輯：藍單良品 > 藍單退料時，強制切換
     if (goodReturn > blueReturn) {
+      giftReturn = goodReturn - blueReturn;
       goodReturn = blueReturn;
       badReturn = 0;
     } else {
@@ -250,6 +250,7 @@ function calculateLeft() {
   requirePick = Math.max(requirePick, 0);
   goodReturn = Math.max(goodReturn, 0);
   badReturn = Math.max(badReturn, 0);
+  giftReturn = Math.max(giftReturn, 0);
 
   const outputLines = [
     `領料單: ${requirePick}`,
@@ -257,10 +258,15 @@ function calculateLeft() {
     `藍單不良品: ${badReturn}`
   ];
 
+  if (giftReturn > 0) {
+    outputLines.push(`贈品: ${giftReturn}`);
+  }
+
   const leftResultDiv = document.getElementById('leftResult');
   leftResultDiv.textContent = outputLines.join('\n');
   leftResultDiv.style.display = 'block';
 }
+
 
 </script>
 
