@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
@@ -93,7 +93,7 @@
       flex-wrap: wrap;
     }
 
-    .manual-checkbox {
+    .manual-checkbox, .x2-checkbox {
       font-weight: normal;
       display: inline-block;
       margin-top: 5px;
@@ -144,6 +144,9 @@
     <!-- 退料區 -->
     <label>貼紙備料數（批號1）：
       <input type="number" id="prepared1" min="0" oninput="updatePreparedTotal()">
+      <span class="x2-checkbox">
+        <input type="checkbox" id="x2Toggle" /> x2
+      </span>
     </label>
     <label>貼紙備料數（批號2）：
       <input type="number" id="prepared2" min="0" oninput="updatePreparedTotal()">
@@ -154,7 +157,7 @@
     <label>工單製令數：
       <input type="number" id="workOrder" min="0">
     </label>
-    
+
     <label>實際退料數：
       <input type="number" id="actualReturn" class="readonly" readonly>
       <span class="manual-checkbox">
@@ -176,30 +179,27 @@
 
 <script>
   function clearAll() {
-  const ids = [
-    'totalWeight', 'coreWeight', 'originalRolls', 'returnWeight', 'calculatedResult',
-    'prepared1', 'prepared2', 'preparedTotal', 'workOrder', 'actualReturn', 'blueReturn'
-  ];
-
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.value = '';
+    const ids = [
+      'totalWeight', 'coreWeight', 'originalRolls', 'returnWeight', 'calculatedResult',
+      'prepared1', 'prepared2', 'preparedTotal', 'workOrder', 'actualReturn', 'blueReturn'
+    ];
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    const manualToggle = document.getElementById('manualToggle');
+    if (manualToggle.checked) {
+      manualToggle.checked = false;
+      toggleManualInput(); 
     }
-  });
-
-  // 取消手動輸入模式
-  const manualToggle = document.getElementById('manualToggle');
-  if (manualToggle.checked) {
-    manualToggle.checked = false;
-    toggleManualInput(); // 重新鎖定 actualReturn 欄位
+    const x2Toggle = document.getElementById('x2Toggle');
+    if (x2Toggle.checked) {
+      x2Toggle.checked = false;
+    }
+    const leftResultDiv = document.getElementById('leftResult');
+    leftResultDiv.style.display = 'none';
+    leftResultDiv.textContent = '';
   }
-
-  // 隱藏結果區塊
-  const leftResultDiv = document.getElementById('leftResult');
-  leftResultDiv.style.display = 'none';
-  leftResultDiv.textContent = '';
-}
 
   function updatePreparedTotal() {
     const p1 = parseInt(document.getElementById('prepared1').value) || 0;
@@ -247,54 +247,51 @@
       calculateRightAuto();
     }
   }
-function calculateLeft() {
-  const prepared = parseInt(document.getElementById('preparedTotal').value) || 0;
-  const workOrder = parseInt(document.getElementById('workOrder').value) || 0;
-  const actualReturn = parseInt(document.getElementById('actualReturn').value) || 0;
-  const blueReturn = parseInt(document.getElementById('blueReturn').value) || 0;
 
-  const shouldReturn = prepared - workOrder;
-  let goodReturn = 0, badReturn = 0, requirePick = 0, giftReturn = 0;
+  function calculateLeft() {
+    const prepared = parseInt(document.getElementById('preparedTotal').value) || 0;
+    const workOrder = parseInt(document.getElementById('workOrder').value) || 0;
+    const actualReturn = parseInt(document.getElementById('actualReturn').value) || 0;
+    let blueReturn = parseInt(document.getElementById('blueReturn').value) || 0;
+    const x2Checked = document.getElementById('x2Toggle').checked;
 
-  if (actualReturn > shouldReturn) {
-    goodReturn = actualReturn - shouldReturn;
-    // ✅ 特殊邏輯：藍單良品 > 藍單退料時，強制切換
-    if (goodReturn > blueReturn) {
-      giftReturn = goodReturn - blueReturn;
-      goodReturn = blueReturn;
-      badReturn = 0;
-    } else {
-      badReturn = blueReturn - goodReturn;
+    // x2勾選時藍單退料數乘2
+    if (x2Checked) {
+      blueReturn *= 2;
     }
-  } else if (actualReturn < shouldReturn) {
-    requirePick = shouldReturn - actualReturn;
-    badReturn = blueReturn + requirePick;
-  } else {
-    badReturn = blueReturn;
+
+    const shouldReturn = prepared - workOrder;
+    let goodReturn = 0, badReturn = 0, requirePick = 0, giftReturn = 0;
+
+    if (actualReturn > shouldReturn) {
+      goodReturn = actualReturn - shouldReturn;
+      if (goodReturn > blueReturn) {
+        giftReturn = goodReturn - blueReturn;
+        goodReturn = blueReturn;
+        badReturn = 0;
+      } else {
+        badReturn = blueReturn - goodReturn;
+      }
+    } else if (actualReturn < shouldReturn) {
+      requirePick = shouldReturn - actualReturn;
+      badReturn = blueReturn + requirePick;
+    } else {
+      badReturn = blueReturn;
+    }
+
+    requirePick = Math.max(requirePick, 0);
+    goodReturn = Math.max(goodReturn, 0);
+    badReturn = Math.max(badReturn, 0);
+    giftReturn = Math.max(giftReturn, 0);
+
+    // 顯示結果
+    const resultDiv = document.getElementById('leftResult');
+    resultDiv.style.display = 'block';
+    resultDiv.textContent =
+      `領料單: ${requirePick}\n` +
+      `藍單良品: ${goodReturn}\n` +
+      `藍單不良品: ${badReturn}`;
   }
-
-  requirePick = Math.max(requirePick, 0);
-  goodReturn = Math.max(goodReturn, 0);
-  badReturn = Math.max(badReturn, 0);
-  giftReturn = Math.max(giftReturn, 0);
-
-  const outputLines = [
-    `領料單: ${requirePick}`,
-    `藍單良品: ${goodReturn}`,
-    `藍單不良品: ${badReturn}`
-  ];
-
-  if (giftReturn > 0) {
-    outputLines.push(`贈品: ${giftReturn}`);
-  }
-
-  const leftResultDiv = document.getElementById('leftResult');
-  leftResultDiv.textContent = outputLines.join('\n');
-  leftResultDiv.style.display = 'block';
-}
-
-
 </script>
-
 </body>
 </html>
