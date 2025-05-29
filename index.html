@@ -8,45 +8,56 @@
     body {
       font-family: sans-serif;
       padding: 20px;
+      margin: 0;
       background: #f0f0f0;
       display: flex;
       justify-content: center;
     }
+
     .container {
       background: white;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
-      width: 360px;
+      width: 100%;
+      max-width: 400px;
+      box-sizing: border-box;
     }
+
     h2 {
       color: #333;
       margin-bottom: 15px;
       text-align: center;
+      font-size: 22px;
     }
+
     label {
       display: block;
-      margin-top: 10px;
+      margin-top: 12px;
       font-weight: 600;
+      font-size: 15px;
     }
+
     input[type=number] {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       font-size: 16px;
-      margin-top: 5px;
+      margin-top: 6px;
       box-sizing: border-box;
       border: 2px solid #4CAF50;
-      border-radius: 5px;
+      border-radius: 6px;
       transition: border-color 0.3s ease;
     }
+
     input[type=number]:focus {
       border-color: #3a9d3a;
       outline: none;
     }
+
     button {
       margin-top: 15px;
-      padding: 12px 20px;
-      font-size: 18px;
+      padding: 12px;
+      font-size: 16px;
       background-color: #4CAF50;
       color: white;
       border: none;
@@ -55,33 +66,54 @@
       width: 48%;
       transition: background-color 0.3s ease;
     }
+
     button:hover {
       background-color: #3a9d3a;
     }
+
     .result {
       margin-top: 20px;
       background: #e8f5e9;
       border: 2px solid #4CAF50;
       border-radius: 5px;
       padding: 15px;
-      font-size: 18px;
+      font-size: 16px;
       color: #2e7d32;
       white-space: pre-line;
     }
+
     .readonly {
       background-color: #f4f4f4;
     }
+
     .button-group {
       display: flex;
       justify-content: space-between;
       gap: 10px;
+      flex-wrap: wrap;
     }
+
     .manual-checkbox {
       font-weight: normal;
       display: inline-block;
       margin-top: 5px;
       font-size: 14px;
       color: #555;
+    }
+
+    @media (max-width: 480px) {
+      h2 {
+        font-size: 20px;
+      }
+
+      button {
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -91,29 +123,48 @@
     <h2>貼紙＋退料 計算工具</h2>
 
     <!-- 貼紙區 -->
-    <label>原始總重：<input type="number" id="totalWeight" step="any" min="0" oninput="calculateRightAuto()"></label>
-    <label>軸心重：<input type="number" id="coreWeight" step="any" min="0" oninput="calculateRightAuto()"></label>
-    <label>原始捲數：<input type="number" id="originalRolls" min="0" oninput="calculateRightAuto()"></label>
-    <label>退料重量：<input type="number" id="returnWeight" step="any" min="0" oninput="calculateRightAuto()"></label>
-    <label>自動換算貼紙數：<input type="number" id="calculatedResult" class="readonly" readonly></label>
+    <label>原始總重：
+      <input type="number" id="totalWeight" step="any" min="0" oninput="calculateRightAuto()">
+    </label>
+    <label>軸心重：
+      <input type="number" id="coreWeight" step="any" min="0" oninput="calculateRightAuto()">
+    </label>
+    <label>原始捲數：
+      <input type="number" id="originalRolls" min="0" oninput="calculateRightAuto()">
+    </label>
+    <label>退料重量：
+      <input type="number" id="returnWeight" step="any" min="0" oninput="calculateRightAuto()">
+    </label>
+    <label>自動換算貼紙數：
+      <input type="number" id="calculatedResult" class="readonly" readonly>
+    </label>
 
     <hr>
 
     <!-- 退料區 -->
-    <label>貼紙備料數（批號1）：<input type="number" id="prepared1" min="0" oninput="updatePreparedTotal()"></label>
-    <label>貼紙備料數（批號2）：<input type="number" id="prepared2" min="0" oninput="updatePreparedTotal()"></label>
-    <label>貼紙備料總數：<input type="number" id="preparedTotal" class="readonly" readonly></label>
-    <label>工單製令數：<input type="number" id="workOrder" min="0"></label>
+    <label>貼紙備料數（批號1）：
+      <input type="number" id="prepared1" min="0" oninput="updatePreparedTotal()">
+    </label>
+    <label>貼紙備料數（批號2）：
+      <input type="number" id="prepared2" min="0" oninput="updatePreparedTotal()">
+    </label>
+    <label>貼紙備料總數：
+      <input type="number" id="preparedTotal" class="readonly" readonly>
+    </label>
+    <label>工單製令數：
+      <input type="number" id="workOrder" min="0">
+    </label>
     
-    <label>
-      實際退料數：
+    <label>實際退料數：
       <input type="number" id="actualReturn" class="readonly" readonly>
       <span class="manual-checkbox">
         <input type="checkbox" id="manualToggle" onclick="toggleManualInput()"> 手動
       </span>
     </label>
 
-    <label>藍單退料數：<input type="number" id="blueReturn" min="0"></label>
+    <label>藍單退料數：
+      <input type="number" id="blueReturn" min="0">
+    </label>
 
     <div class="button-group">
       <button onclick="calculateLeft()">計算</button>
@@ -124,14 +175,12 @@
   </div>
 
 <script>
-  // 備料總數即時更新
   function updatePreparedTotal() {
     const p1 = parseInt(document.getElementById('prepared1').value) || 0;
     const p2 = parseInt(document.getElementById('prepared2').value) || 0;
     document.getElementById('preparedTotal').value = p1 + p2;
   }
 
-  // 自動貼紙計算
   function calculateRightAuto() {
     const totalWeight = parseFloat(document.getElementById('totalWeight').value) || 0;
     const coreWeight = parseFloat(document.getElementById('coreWeight').value) || 0;
@@ -159,7 +208,6 @@
     }
   }
 
-  // 切換是否手動輸入實際退料
   function toggleManualInput() {
     const checkbox = document.getElementById('manualToggle');
     const actualInput = document.getElementById('actualReturn');
@@ -170,11 +218,10 @@
     } else {
       actualInput.setAttribute('readonly', true);
       actualInput.classList.add('readonly');
-      calculateRightAuto(); // 自動填值
+      calculateRightAuto();
     }
   }
 
-  // 退料計算
   function calculateLeft() {
     const prepared = parseInt(document.getElementById('preparedTotal').value) || 0;
     const workOrder = parseInt(document.getElementById('workOrder').value) || 0;
@@ -209,7 +256,6 @@
     leftResultDiv.style.display = 'block';
   }
 
-  // 清除所有欄位
   function clearAll() {
     const ids = ['prepared1', 'prepared2', 'preparedTotal', 'workOrder', 'actualReturn', 'blueReturn',
                  'totalWeight', 'coreWeight', 'originalRolls', 'returnWeight', 'calculatedResult'];
@@ -220,7 +266,6 @@
     document.getElementById('leftResult').style.display = 'none';
   }
 
-  // 初始載入時設定狀態
   window.onload = function () {
     toggleManualInput();
   };
