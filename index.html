@@ -209,21 +209,21 @@
 
     <div id="prepCalculator" style="display:none;">
   <h2>數量換算</h2>
-  <label for="total">數量</label>
+  <label for="total">數量：</label>
   <input type="number" id="total" min="1" placeholder="請輸入總數量" />
 
-  <label for="prep">備料數量</label>
+  <label for="prep">備料數量：</label>
   <input type="number" id="prep" min="0" placeholder="備料數量" />
 
-  <label for="unit">單位</label>
+  <label for="unit">單位：</label>
   <input type="number" id="unit" min="1" placeholder="每箱單位" />
 
-  <label for="perPallet">板數</label>
+  <label for="perPallet">板數：</label>
   <input type="number" id="perPallet" min="1" placeholder="每板單位" />
 
   <div class="buttons">
     <button id="clear">清除</button>
-    <div id="result"></div>
+    <div id="result" class="result" style="display:none;"></div>
   </div>
 </div>
 
@@ -338,7 +338,8 @@ document.querySelectorAll('.tab-buttons button').forEach(btn => {
             }
 
             resultDiv.innerHTML = result;
-        }
+       resultDiv.style.display = 'block';  // 新增：顯示結果區塊
+}
 
         function formatResult(pallets, boxes, units) {
             let result = '';
