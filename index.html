@@ -5,163 +5,154 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>阿哲製作多功能轉換工具</title>
   <style>
-    body {
-      font-family: "Microsoft JhengHei", sans-serif; /* 設定字體 */
-      background: #f5f5f5; /* 背景顏色 */
-      padding: 2rem; /* 外邊距 */
-      display: flex; /* 使用彈性布局 */
-      justify-content: center; /* 水平置中 */
-      align-items: flex-start; /* 垂直置頂 */
-      min-height: 100vh; /* 最小高度為視窗高度 */
-    }
-    .container {
-      width: 100%; /* 寬度為100% */
-      max-width: 400px; /* 最大寬度 */
-      background: white; /* 背景顏色 */
-      padding: 2rem 2.5rem; /* 內邊距 */
-      border-radius: 12px; /* 圓角 */
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* 陰影效果 */
-      box-sizing: border-box; /* 包含內邊距和邊框的計算 */
-    }
-    h2 {
-      text-align: center; /* 標題置中 */
-      margin-bottom: 1.5rem; /* 下邊距 */
-      color: #222; /* 字體顏色 */
-    }
-    .tab-buttons {
-      display: flex; /* 使用彈性布局 */
-      justify-content: space-between; /* 按鈕均勻分佈 */
-      margin-bottom: 20px; /* 下邊距 */
-    }
-    .tab-buttons button {
-      flex: 1; /* 按鈕填滿可用空間 */
-      padding: 10px; /* 內邊距 */
-      border: 2px solid #4CAF50; /* 邊框顏色 */
-      background-color: white; /* 背景顏色 */
-      color: #4CAF50; /* 字體顏色 */
-      border-radius: 5px; /* 圓角 */
-      cursor: pointer; /* 游標樣式 */
-      margin: 0 5px; /* 按鈕間距 */
-      transition: background-color 0.3s, color 0.3s; /* 懸停效果 */
-    }
-    .tab-buttons button.active {
-      background-color: #4CAF50; /* 活躍按鈕背景顏色 */
-      color: white; /* 活躍按鈕字體顏色 */
-    }
-    label {
-      display: block; /* 占據整行 */
-      margin-top: 1rem; /* 上邊距 */
-      font-weight: 600; /* 字體粗細 */
-      color: #444; /* 字體顏色 */
-    }
-    input[type=number] {
-      width: 100%; /* 寬度為100% */
-      padding: 0.5rem 0.75rem; /* 內邊距 */
-      margin-top: 0.25rem; /* 上邊距 */
-      border: 1px solid #ccc; /* 邊框顏色 */
-      border-radius: 8px; /* 圓角 */
-      font-size: 1rem; /* 字體大小 */
-      box-sizing: border-box; /* 包含內邊距和邊框的計算 */
-      transition: border-color 0.3s; /* 邊框顏色變化效果 */
-    }
-    input[type=number]:focus {
-      outline: none; /* 去除焦點輪廓 */
-      border-color: #4CAF50; /* 焦點邊框顏色 */
-      box-shadow: 0 0 6px #4CAF50aa; /* 焦點陰影效果 */
-    }
-    button {
-      margin-top: 15px; /* 上邊距 */
-      padding: 12px; /* 內邊距 */
-      font-size: 16px; /* 字體大小 */
-      background-color: #4CAF50; /* 背景顏色 */
-      color: white; /* 字體顏色 */
-      border: none; /* 無邊框 */
-      border-radius: 5px; /* 圓角 */
-      cursor: pointer; /* 游標樣式 */
-      width: 48%; /* 寬度 */
-      transition: background-color 0.3s ease; /* 懸停效果 */
-    }
-    button:hover {
-      background-color: #3a9d3a; /* 懸停時的背景顏色 */
-    }
-    .result {
-      margin-top: 20px; /* 上邊距 */
-      background: #e8f5e9; /* 背景顏色 */
-      border: 2px solid #4CAF50; /* 邊框顏色 */
-      border-radius: 5px; /* 圓角 */
-      padding: 15px; /* 內邊距 */
-      font-size: 16px; /* 字體大小 */
-      color: #2e7d32; /* 字體顏色 */
-      white-space: pre-line; /* 保留換行 */
-    }
-    .readonly {
-      background-color: #f4f4f4; /* 只讀輸入框背景顏色 */
-    }
-    .button-group {
-      display: flex; /* 使用彈性布局 */
-      justify-content: space-between; /* 按鈕均勻分佈 */
-      gap: 10px; /* 按鈕間距 */
-      flex-wrap: wrap; /* 允許換行 */
-    }
-/* 包含多個勾選框的容器，採用水平排列，禁止換行 */
+body {
+  font-family: "Microsoft JhengHei", sans-serif;
+  background: #f5f5f5;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+.container {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  padding: 2rem 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  box-sizing: border-box;
+}
+h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #222;
+}
+.tab-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.tab-buttons button {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid #4CAF50;
+  background-color: white;
+  color: #4CAF50;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 0 5px;
+  transition: background-color 0.3s, color 0.3s;
+}
+.tab-buttons button.active {
+  background-color: #4CAF50;
+  color: white;
+}
+label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: 600;
+  color: #444;
+}
+input[type=number] {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+input[type=number]:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 6px #4CAF50aa;
+}
+/* 一般按鈕和特定區塊按鈕合併 */
+button {
+  margin-top: 15px;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 48%;
+  transition: background-color 0.3s ease;
+}
+button:hover {
+  background-color: #3a9d3a;
+}
+/* prepCalculator 特殊按鈕覆蓋寬度 */
+#prepCalculator .buttons button {
+  width: 100%;
+}
+/* 結果區塊 */
+.result {
+  margin-top: 20px;
+  background: #e8f5e9;
+  border: 2px solid #4CAF50;
+  border-radius: 5px;
+  padding: 15px;
+  font-size: 16px;
+  color: #2e7d32;
+  white-space: pre-line;
+}
+/* 只讀欄位背景 */
+.readonly {
+  background-color: #f4f4f4;
+}
+/* 按鈕群組 */
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+/* 勾選框群組 */
 .checkbox-group {
-  display: flex;            /* 使用彈性盒模型排列 */
-  flex-wrap: nowrap;        /* 不允許換行，所有選項維持同一列 */
-  gap: 12px;                /* 各勾選框間的水平間距 */
-  margin-top: 4px;          /* 上方間距，調整成較小距離，讓元素靠近 */
-  align-items: center;      /* 垂直置中對齊內容 */
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px;
+  margin-top: 4px;
+  align-items: center;
 }
-
-/* 單一勾選框加文字的排列樣式 */
+/* 單一勾選框和文字 */
 .checkbox-option {
-  display: flex;            /* 內部元素（勾選框+文字）水平排列 */
-  align-items: center;      /* 垂直置中 */
-  gap: 4px;                 /* 勾選框與文字之間的間距 */
-  white-space: nowrap;      /* 禁止文字換行，避免多行影響排版 */
-  font-size: 14px;          /* 字體大小 */
-  color: #555;              /* 文字顏色 */
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  font-size: 14px;
+  color: #555;
 }
-
-/* 調整勾選框大小 */
-.checkbox-option input[type="checkbox"] {
-  transform: scale(1.2);    /* 將勾選框放大1.3倍 */
-  margin-top: 0;            /* 去除上邊距，避免位移 */
-  vertical-align: middle;   /* 垂直對齊中間 */
+/* 勾選框大小統一設定 */
+input[type="checkbox"] {
+  transform: scale(1.2);
+  margin-top: 0;
+  vertical-align: middle;
 }
-
-
-
-
-  /* 數量換算區塊清除按鈕寬度改100% */
-  #prepCalculator .buttons button {
-    width: 100%;
-    margin-top: 15px;
-    padding: 12px;
-    font-size: 16px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-
-    .x2-container input[type="checkbox"], .manual-checkbox input[type="checkbox"] {
-      transform: scale(1.3); /* 增大勾選框的大小 */
-      margin-top: 4px; /* 清除任何上邊距 */
-      vertical-align: middle; /* 垂直對齊 */
-    }
-    @media (max-width: 480px) {
+/* 特定容器調整勾選框大小 */
+.x2-container input[type="checkbox"],
+.manual-checkbox input[type="checkbox"] {
+  transform: scale(1.3);
+  margin-top: 4px;
+}
+/* 響應式調整 */
+@media (max-width: 480px) {
   button {
-    width: 48%; /* 改成和電腦版一樣寬度 */
-    margin-top: 9px; /* 取消上下間距 */
+    width: 48%;
+    margin-top: 9px;
   }
   .button-group {
-    flex-direction: row; /* 手機也改成左右排列 */
-    gap: 10px; /* 按鈕間距 */
-    justify-content: space-between; /* 平均分佈 */
+    flex-direction: row;
+    gap: 10px;
+    justify-content: space-between;
   }
 }
+
 
   </style>
 </head>
@@ -320,15 +311,17 @@
 
     // 清除按鈕的功能
     function clearFields() {
-        totalInput.value = '';
-        prepInput.value = '';
-        unitInput.value = '';
-        perPalletInput.value = '';
-        const boxCountInput = document.getElementById('boxCount');
-        boxCountInput.value = '';
-        document.getElementById('boxCountResult').textContent = '0';
-        resultDiv.textContent = '';
-    }
+    totalInput.value = '';
+    prepInput.value = '';
+    unitInput.value = '';
+    perPalletInput.value = '';
+    const boxCountInput = document.getElementById('boxCount');
+    boxCountInput.value = '';
+    document.getElementById('boxCountResult').textContent = '0';
+
+    resultDiv.textContent = '';
+    resultDiv.style.display = 'none'; // 隱藏結果區塊
+}
 
     // 更新板箱數的顯示結果
     function updateBoxCountResult() {
