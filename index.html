@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>阿哲製作2.0</title>
+  <title>阿哲製作多功能轉換工具</title>
   <style>
     body {
       font-family: "Microsoft JhengHei", sans-serif; /* 設定字體 */
@@ -210,47 +210,47 @@
     <div id="returnCalculator">
         <h2>退料換算</h2>
         <label>原始重量：
-            <input type="number" id="totalWeight" step="any" min="0" oninput="calculateRightAuto()">
+            <input type="number" id="totalWeight" step="any" min="0" placeholder="請輸入原始重量" oninput="calculateRightAuto()">
         </label>
-        <label>軸心重：
-            <input type="number" id="coreWeight" step="any" min="0" oninput="calculateRightAuto()">
+        <label>軸心重量：
+            <input type="number" id="coreWeight" step="any" min="0" placeholder="請輸入軸心重量" oninput="calculateRightAuto()">
         </label>
         <label>原始捲數：
-            <input type="number" id="originalRolls" min="0" oninput="calculateRightAuto()">
+            <input type="number" id="originalRolls" min="0" placeholder="請輸入原始單捲數量" oninput="calculateRightAuto()">
         </label>
         <label>退料重量：
-            <input type="number" id="returnWeight" step="any" min="0" oninput="calculateRightAuto()">
+            <input type="number" id="returnWeight" step="any" min="0" placeholder="請輸入實際退料重量" oninput="calculateRightAuto()">
         </label>
-        <label>自動換算貼紙數：
+        <label>換算貼紙張數：
             <input type="number" id="calculatedResult" class="readonly" readonly>
         </label>
-        <label>貼紙備料數（批號1）：
-            <input type="number" id="prepared1" min="0" oninput="updatePreparedTotal()">
+        <label>貼紙備料數：
+            <input type="number" id="prepared1" min="0" placeholder="請輸入備料數量" oninput="updatePreparedTotal()">
             <span class="checkbox-group">
                 <label class="checkbox-option"><input type="checkbox" id="x2Toggle"> ｘ2</label>
-                <label class="checkbox-option"><input type="checkbox" id="x12Toggle"> ｘ12</label>
+                <label class="checkbox-option"><input type="checkbox" id="x12Toggle"> ｘ12　（特殊種類使用）</label>
             </span>
         </label>
 
-        <label>貼紙備料數（批號2）：
-            <input type="number" id="prepared2" min="0" oninput="updatePreparedTotal()">
+        <label>貼紙備料數（跨批號）：
+            <input type="number" id="prepared2" min="0" placeholder="請輸入備料數量" oninput="updatePreparedTotal()">
         </label>
         <label>貼紙備料總數：
             <input type="number" id="preparedTotal" class="readonly" readonly>
         </label>
         <label>工單製令數：
-            <input type="number" id="workOrder" min="0">
+            <input type="number" id="workOrder" min="0" placeholder="請輸入工單製令數">
         </label>
         
         <label>實際退料數：
             <input type="number" id="actualReturn" class="readonly" readonly>
             <span class="checkbox-group">
-                <label class="checkbox-option"><input type="checkbox" id="manualToggle" onclick="toggleManualInput()"> 勾選時可自行輸入</label>
+                <label class="checkbox-option"><input type="checkbox" id="manualToggle" onclick="toggleManualInput()"> 勾選可自行輸入</label>
             </span>
         </label>
 
         <label>藍單退料數：
-            <input type="number" id="blueReturn" min="0">
+            <input type="number" id="blueReturn" min="0" placeholder="請輸入">
         </label>
 
         <div class="button-group">
@@ -263,22 +263,22 @@
 
     <!-- 數量換算 -->
     <div id="prepCalculator" style="display:none;">
-        <h2>數量換算</h2>
+        <h2>收貨/備料/回算多功能轉換</h2>
         <label for="total">數量：</label>
         <input type="number" id="total" min="1" placeholder="請輸入總數量" />
 
         <label for="prep">備料數量：</label>
-        <input type="number" id="prep" min="0" placeholder="備料數量" />
+        <input type="number" id="prep" min="0" placeholder="請輸入備料數量" />
 
         <label for="unit">單位：</label>
-        <input type="number" id="unit" min="1" placeholder="每箱單位" />
-
-        <label for="boxCount">板箱數：</label>
-        <input type="number" id="boxCount" min="1" placeholder="請輸入每板箱數" oninput="updateBoxCountResult()">
-        <div id="boxCountDisplay" style="margin-top: 0.5rem; color: #444;">板數:：<span id="boxCountResult">0</span></div>
+        <input type="number" id="unit" min="1" placeholder="請輸入每箱單位" oninput="updateBoxCountResult()"/>
 
         <label for="perPallet">板數：</label>
-        <input type="number" id="perPallet" min="1" placeholder="每板單位" />
+        <input type="number" id="perPallet" min="1" placeholder="請輸入每板單位" oninput="updateBoxCountResult()"/>
+
+        <div class="buttons">        <label for="boxCount">板箱數：</label>
+        <input type="number" id="boxCount" min="1" placeholder="請輸入每板箱數　　＊推薦大量單位使用＊" oninput="updateBoxCountResult()">
+        <div id="boxCountDisplay" style="margin-top: 0.5rem; color: #444;">滿板數量：<span id="boxCountResult">0</span></div>
 
 
         <div class="buttons">
@@ -336,6 +336,9 @@
         const boxCount = parseInt(document.getElementById('boxCount').value) || 0; // 板箱數
         const result = unit * boxCount; // 計算結果
         document.getElementById('boxCountResult').textContent = result; // 顯示結果
+
+        // 也更新庫存數量
+        updateResult();
     }
 
     // 數量換算邏輯
@@ -544,6 +547,5 @@
         document.getElementById('leftResult').style.display = 'none';
     }
 </script>
-
 </body>
 </html>
