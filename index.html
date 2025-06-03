@@ -516,7 +516,7 @@ input[type="checkbox"] {
         badReturn = Math.max(badReturn, 0);
         giftReturn = Math.max(giftReturn, 0);
 
-        const outputLines = [
+               const outputLines = [
             `領料單: ${requirePick}`,
             `藍單良品: ${goodReturn}`,
             `藍單不良品: ${badReturn}`
@@ -529,6 +529,9 @@ input[type="checkbox"] {
         const leftResultDiv = document.getElementById('leftResult');
         leftResultDiv.textContent = outputLines.join('\n');
         leftResultDiv.style.display = 'block';
+
+        // 保存輸入的數據到 localStorage
+        saveData();
     }
 
     function clearAll() {
@@ -542,7 +545,64 @@ input[type="checkbox"] {
         document.getElementById('x2Toggle').checked = false;
         document.getElementById('x12Toggle').checked = false;
         document.getElementById('leftResult').style.display = 'none';
+
+        // 清除 localStorage
+        localStorage.clear();
     }
+
+    function saveData() {
+        const data = {
+            totalWeight: document.getElementById('totalWeight').value,
+            coreWeight: document.getElementById('coreWeight').value,
+            originalRolls: document.getElementById('originalRolls').value,
+            returnWeight: document.getElementById('returnWeight').value,
+            prepared1: document.getElementById('prepared1').value,
+            prepared2: document.getElementById('prepared2').value,
+            workOrder: document.getElementById('workOrder').value,
+            actualReturn: document.getElementById('actualReturn').value,
+            blueReturn: document.getElementById('blueReturn').value,
+            manualToggle: document.getElementById('manualToggle').checked,
+            x2Toggle: document.getElementById('x2Toggle').checked,
+            x12Toggle: document.getElementById('x12Toggle').checked,
+            total: document.getElementById('total').value,
+            prep: document.getElementById('prep').value,
+            unit: document.getElementById('unit').value,
+            perPallet: document.getElementById('perPallet').value,
+            boxCount: document.getElementById('boxCount').value
+        };
+        localStorage.setItem('calculatorData', JSON.stringify(data));
+    }
+
+    function loadData() {
+        const savedData = JSON.parse(localStorage.getItem('calculatorData'));
+        if (savedData) {
+            document.getElementById('totalWeight').value = savedData.totalWeight || '';
+            document.getElementById('coreWeight').value = savedData.coreWeight || '';
+            document.getElementById('originalRolls').value = savedData.originalRolls || '';
+            document.getElementById('returnWeight').value = savedData.returnWeight || '';
+            document.getElementById('prepared1').value = savedData.prepared1 || '';
+            document.getElementById('prepared2').value = savedData.prepared2 || '';
+            document.getElementById('workOrder').value = savedData.workOrder || '';
+            document.getElementById('actualReturn').value = savedData.actualReturn || '';
+            document.getElementById('blueReturn').value = savedData.blueReturn || '';
+            document.getElementById('manualToggle').checked = savedData.manualToggle || false;
+            document.getElementById('x2Toggle').checked = savedData.x2Toggle || false;
+            document.getElementById('x12Toggle').checked = savedData.x12Toggle || false;
+            document.getElementById('total').value = savedData.total || '';
+            document.getElementById('prep').value = savedData.prep || '';
+            document.getElementById('unit').value = savedData.unit || '';
+            document.getElementById('perPallet').value = savedData.perPallet || '';
+            document.getElementById('boxCount').value = savedData.boxCount || '';
+
+            // 重新計算結果
+            calculateRightAuto();
+            updatePreparedTotal();
+            updateBoxCountResult();
+            updateResult();
+        }
+    }
+
+    // 在頁面加載時載入資料
+    window.onload = loadData;
 </script>
-</body>
-</html>
+
