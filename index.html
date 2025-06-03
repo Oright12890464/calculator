@@ -246,6 +246,9 @@
         document.querySelectorAll('.tab-buttons button').forEach(btn => {
             btn.classList.toggle('active', btn.textContent.includes(tabName));
         });
+
+        // 保存當前輸入到 Local Storage
+        saveToLocalStorage();
     }
 
     // 初始顯示介面
@@ -257,16 +260,25 @@
     const unitInput = document.getElementById('unit');
     const perPalletInput = document.getElementById('perPallet');
     const resultDiv = document.getElementById('result');
-    
+
     // 監聽輸入框的變化
     const inputs = [
         totalInput,
         prepInput,
         unitInput,
         perPalletInput,
-        document.getElementById('boxCount')
+        document.getElementById('boxCount'),
+        document.getElementById('totalWeight'),
+        document.getElementById('coreWeight'),
+        document.getElementById('originalRolls'),
+        document.getElementById('returnWeight'),
+        document.getElementById('prepared1'),
+        document.getElementById('prepared2'),
+        document.getElementById('workOrder'),
+        document.getElementById('actualReturn'),
+        document.getElementById('blueReturn')
     ];
-    inputs.forEach(input => input.addEventListener('input', updateResult));
+    inputs.forEach(input => input.addEventListener('input', saveToLocalStorage));
 
     // 清除按鈕的功能
     function clearFields() {
@@ -324,7 +336,7 @@
         let result = '';
         let remaining = 0; // 剩餘數量
 
-        // 根據不同的輸入情況更新結果
+                // 根據不同的輸入情況更新結果
         if (prep === null && unit === null && perPallet === null) {
             result = `庫存數量：${total}支`;
         } 
@@ -399,10 +411,10 @@
         }
 
         resultDiv.innerHTML = result;
-        resultDiv.style.display = 'block';  // 顯示結果區塊
+        resultDiv.style.display = 'block'; // 顯示結果區塊
     }
 
-        // 格式化結果顯示
+    // 格式化結果顯示
     function formatResult(pallets, boxes, units) {
         let result = '';
         if (pallets > 0) result += `${pallets}板 `;
@@ -425,6 +437,15 @@
         localStorage.setItem('unit', unitInput.value);
         localStorage.setItem('perPallet', perPalletInput.value);
         localStorage.setItem('boxCount', document.getElementById('boxCount').value);
+        localStorage.setItem('totalWeight', document.getElementById('totalWeight').value);
+        localStorage.setItem('coreWeight', document.getElementById('coreWeight').value);
+        localStorage.setItem('originalRolls', document.getElementById('originalRolls').value);
+        localStorage.setItem('returnWeight', document.getElementById('returnWeight').value);
+        localStorage.setItem('prepared1', document.getElementById('prepared1').value);
+        localStorage.setItem('prepared2', document.getElementById('prepared2').value);
+        localStorage.setItem('workOrder', document.getElementById('workOrder').value);
+        localStorage.setItem('actualReturn', document.getElementById('actualReturn').value);
+        localStorage.setItem('blueReturn', document.getElementById('blueReturn').value);
     }
 
     // 當頁面加載時恢復數據
@@ -434,6 +455,17 @@
         unitInput.value = localStorage.getItem('unit') || '';
         perPalletInput.value = localStorage.getItem('perPallet') || '';
         document.getElementById('boxCount').value = localStorage.getItem('boxCount') || '';
+        document.getElementById('totalWeight').value = localStorage.getItem('totalWeight') || '';
+        document.getElementById('coreWeight').value = localStorage.getItem('coreWeight') || '';
+        document.getElementById('originalRolls').value = localStorage.getItem('originalRolls') || '';
+        document.getElementById('returnWeight').value = localStorage.getItem('returnWeight') || '';
+        document.getElementById('prepared1').value = localStorage.getItem('prepared1') || '';
+        document.getElementById('prepared2').value = localStorage.getItem('prepared2') || '';
+        document.getElementById('workOrder').value = localStorage.getItem('workOrder') || '';
+        document.getElementById('actualReturn').value = localStorage.getItem('actualReturn') || '';
+        document.getElementById('blueReturn').value = localStorage.getItem('blueReturn') || '';
+        
+        updatePreparedTotal(); // 恢復後更新備料總數
         updateResult(); // 恢復後更新結果顯示
 
         // 監聽輸入框的變化以便保存到 Local Storage
@@ -556,5 +588,3 @@
 </script>
 </body>
 </html>
-
-    
