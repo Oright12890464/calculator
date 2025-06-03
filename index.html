@@ -252,25 +252,25 @@ input[type="checkbox"] {
         <div class="result" id="leftResult" style="display:none;"></div>
     </div>
 
-    <!-- 數量換算 -->
-    <div id="prepCalculator" style="display:none;">
-        <h2>收貨/備料/回算多功能轉換</h2>
-        <label for="total">數量：</label>
-        <input type="number" id="total" min="1" placeholder="請輸入總數量" />
+<!-- 數量換算 -->
+<div id="prepCalculator" style="display:none;">
+    <h2>收貨/備料/回算多功能轉換</h2>
+    <label for="total">數量：</label>
+    <input type="number" id="total" min="1" placeholder="請輸入總數量" />
 
-        <label for="prep">備料數量：</label>
-        <input type="number" id="prep" min="0" placeholder="請輸入備料數量" />
+    <label for="prep">備料數量：</label>
+    <input type="number" id="prep" min="0" placeholder="請輸入備料數量" />
 
-        <label for="unit">單位：</label>
-        <input type="number" id="unit" min="1" placeholder="請輸入每箱單位" oninput="updateBoxCountResult()"/>
+    <label for="unit">單位：</label>
+    <input type="number" id="unit" min="1" placeholder="請輸入每箱單位" oninput="updateBoxCountResult()"/>
 
-        <label for="perPallet">板數：</label>
-        <input type="number" id="perPallet" min="1" placeholder="請輸入每板單位" oninput="updateBoxCountResult()"/>
+    <label for="perPallet">板數：</label>
+    <input type="number" id="perPallet" min="1" placeholder="請輸入每板單位" oninput="updateBoxCountResult()"/>
 
-        <div class="buttons">        <label for="boxCount">板箱數：</label>
+    <div class="buttons">
+        <label for="boxCount">板箱數：</label>
         <input type="number" id="boxCount" min="1" placeholder="請輸入每板箱數　　＊推薦大量單位使用＊" oninput="updateBoxCountResult()">
         <div id="boxCountDisplay" style="margin-top: 0.5rem; color: #444;">滿板數量：<span id="boxCountResult">0</span></div>
-
 
         <div class="buttons">
             <button id="clear" onclick="clearFields()">清除</button>
@@ -311,17 +311,17 @@ input[type="checkbox"] {
 
     // 清除按鈕的功能
     function clearFields() {
-    totalInput.value = '';
-    prepInput.value = '';
-    unitInput.value = '';
-    perPalletInput.value = '';
-    const boxCountInput = document.getElementById('boxCount');
-    boxCountInput.value = '';
-    document.getElementById('boxCountResult').textContent = '0';
+        totalInput.value = '';
+        prepInput.value = '';
+        unitInput.value = '';
+        perPalletInput.value = '';
+        const boxCountInput = document.getElementById('boxCount');
+        boxCountInput.value = '';
+        document.getElementById('boxCountResult').textContent = '0';
 
-    resultDiv.textContent = '';
-    resultDiv.style.display = 'none'; // 隱藏結果區塊
-}
+        resultDiv.textContent = '';
+        resultDiv.style.display = 'none'; // 隱藏結果區塊
+    }
 
     // 更新板箱數的顯示結果
     function updateBoxCountResult() {
@@ -334,104 +334,127 @@ input[type="checkbox"] {
         updateResult();
     }
 
-// 更新結果顯示
-function updateResult() {
-    const total = parseInt(totalInput.value); // 總數量
-    const prep = prepInput.value === '' ? null : parseInt(prepInput.value); // 備料數量
-    const unit = unitInput.value === '' ? null : parseInt(unitInput.value); // 單位數量
-    const perPallet = perPalletInput.value === '' ? null : parseInt(perPalletInput.value); // 每板數量
+    // 更新結果顯示
+    function updateResult() {
+        const total = parseInt(totalInput.value); // 總數量
+        const prep = prepInput.value === '' ? null : parseInt(prepInput.value); // 備料數量
+        const unit = unitInput.value === '' ? null : parseInt(unitInput.value); // 單位數量
+        const perPallet = perPalletInput.value === '' ? null : parseInt(perPalletInput.value); // 每板數量
 
-    resultDiv.textContent = ''; // 清空結果顯示區域
+        resultDiv.textContent = ''; // 清空結果顯示區域
 
-    // 確保總數量必填且大於0
-    if (isNaN(total) || total <= 0) {
-        resultDiv.textContent = '請輸入有效的數量（總數），且必須大於0';
-        return;
+        // 確保總數量必填且大於0
+        if (isNaN(total) || total <= 0) {
+            resultDiv.textContent = '請輸入有效的數量（總數），且必須大於0';
+            return;
+        }
+
+        // 錯誤防呆：備料數量不能超過總數量
+        if (prep !== null && prep > total) {
+            resultDiv.textContent = '備料數量不能大於總數量';
+            return;
+        }
+
+        let result = '';
+        let remaining = 0; // 剩餘數量
+
+        // 根據不同的輸入情況更新結果
+        if (prep === null && unit === null && perPallet === null) {
+            result = `庫存數量：${total}支`;
+        } 
+        else if (prep !== null && unit === null && perPallet === null) {
+            const stock = total - prep;
+            result = `庫存數量：${formatResult(0, 0, stock)} (${stock})`;
+        } 
+        else if (unit !== null && prep === null && perPallet === null) {
+            const boxes = Math.floor(total / unit);
+            const units = total % unit;
+            result = `庫存數量：${formatResult(0, boxes, units)}`;
+        } 
+        else if (perPallet !== null && prep === null && unit === null) {
+            const pallets = Math.floor(total / perPallet);
+            const remain = total % perPallet;
+            result = `庫存數量：${formatResult(pallets, 0, remain)}`;
+        } 
+        else if (prep !== null && unit !== null && perPallet === null) {
+            const stock = total - prep;
+            const prepBoxes = Math.floor(prep / unit);
+            const prepUnits = prep % unit;
+            const stockBoxes = Math.floor(stock / unit);
+            const stockUnits = stock % unit;
+
+            if (prep > 0) {
+                result = `備料數量：${formatResult(0, prepBoxes, prepUnits)} (${prep})<br>庫存數量：${formatResult(0, stockBoxes, stockUnits)} (${stock})`;
+            } else {
+                result = `庫存數量：${formatResult(0, stockBoxes, stockUnits)} (${stock})`;
+            }
+            remaining = stock; // 計算剩餘數量
+        } 
+        else if (prep !== null && perPallet !== null && unit === null) {
+            const stock = total - prep;
+            const prepPallets = Math.floor(prep / perPallet);
+            const prepRemain = prep % perPallet;
+            const stockPallets = Math.floor(stock / perPallet);
+            const stockRemain = stock % perPallet;
+
+            if (prep > 0) {
+                result = `備料數量：${formatResult(prepPallets, 0, prepRemain)} (${prep})<br>庫存數量：${formatResult(stockPallets, 0, stockRemain)} (${stock})`;
+            } else {
+                result = `庫存數量：${formatResult(stockPallets, 0, stockRemain)} (${stock})`;
+            }
+            remaining = stock; // 計算剩餘數量
+        } 
+        else if (unit !== null && perPallet !== null && prep === null) {
+            const pallets = Math.floor(total / perPallet);
+            const remain = total % perPallet;
+            const boxes = Math.floor(remain / unit);
+            const units = remain % unit;
+
+            result = `庫存數量：${formatResult(pallets, boxes, units)}`;
+        } 
+        else if (prep !== null && unit !== null && perPallet !== null) {
+            const stock = total - prep;
+            const prepPallets = Math.floor(prep / perPallet);
+            const prepRemain = prep % perPallet;
+            const prepBoxes = Math.floor(prepRemain / unit);
+            const prepUnits = prepRemain % unit;
+
+            const stockPallets = Math.floor(stock / perPallet);
+            const stockRemain = stock % perPallet;
+            const stockBoxes = Math.floor(stockRemain / unit);
+            const stockUnits = stockRemain % unit;
+
+            if (prep > 0) {
+                result = `備料數量：${formatResult(prepPallets, prepBoxes, prepUnits)} (${prep})<br>庫存數量：${formatResult(stockPallets, stockBoxes, stockUnits)} (${stock})`;
+            } else {
+                result = `庫存數量：${formatResult(stockPallets, stockBoxes, stockUnits)} (${stock})`;
+            }
+            remaining = stock; // 計算剩餘數量
+        }
+
+        resultDiv.innerHTML = result;
+        resultDiv.style.display = 'block';  // 顯示結果區塊
     }
 
-    let result = '';
-
-    // 根據不同的輸入情況更新結果
-    if (prep === null && unit === null && perPallet === null) {
-        result = `庫存數量：${total}支`;
-    } 
-    else if (prep !== null && unit === null && perPallet === null) {
-        const stock = total - prep;
-        result = `備料數量：${formatResult(0, 0, prep)}<br>庫存數量：${formatResult(0, 0, stock)} 剩餘：${stock}`;
-    } 
-    else if (unit !== null && prep === null && perPallet === null) {
-        const boxes = Math.floor(total / unit);
-        const units = total % unit;
-        result = `庫存數量：${formatResult(0, boxes, units)}`;
-    } 
-    else if (perPallet !== null && prep === null && unit === null) {
-        const pallets = Math.floor(total / perPallet);
-        const remain = total % perPallet;
-        result = `庫存數量：${formatResult(pallets, 0, remain)} 剩餘：${remain}`;
-    } 
-    else if (prep !== null && unit !== null && perPallet === null) {
-        const stock = total - prep;
-        const prepBoxes = Math.floor(prep / unit);
-        const prepUnits = prep % unit;
-        const stockBoxes = Math.floor(stock / unit);
-        const stockUnits = stock % unit;
-
-        result = `備料數量：${formatResult(0, prepBoxes, prepUnits)}<br>庫存數量：${formatResult(0, stockBoxes, stockUnits)} 剩餘：${stock}`;
-    } 
-    else if (prep !== null && perPallet !== null && unit === null) {
-        const stock = total - prep;
-        const prepPallets = Math.floor(prep / perPallet);
-        const prepRemain = prep % perPallet;
-        const stockPallets = Math.floor(stock / perPallet);
-        const stockRemain = stock % perPallet;
-
-        result = `備料數量：${formatResult(prepPallets, 0, prepRemain)}<br>庫存數量：${formatResult(stockPallets, 0, stockRemain)} 剩餘：${stock}`;
-    } 
-    else if (unit !== null && perPallet !== null && prep === null) {
-        const pallets = Math.floor(total / perPallet);
-        const remain = total % perPallet;
-        const boxes = Math.floor(remain / unit);
-        const units = remain % unit;
-
-        result = `庫存數量：${formatResult(pallets, boxes, units)} 剩餘：${remain}`;
-    } 
-    else if (prep !== null && unit !== null && perPallet !== null) {
-        const stock = total - prep;
-        const prepPallets = Math.floor(prep / perPallet);
-        const prepRemain = prep % perPallet;
-        const prepBoxes = Math.floor(prepRemain / unit);
-        const prepUnits = prepRemain % unit;
-
-        const stockPallets = Math.floor(stock / perPallet);
-        const stockRemain = stock % perPallet;
-        const stockBoxes = Math.floor(stockRemain / unit);
-        const stockUnits = stockRemain % unit;
-
-        result = `備料數量：${formatResult(prepPallets, prepBoxes, prepUnits)}<br>庫存數量：${formatResult(stockPallets, stockBoxes, stockUnits)} 剩餘：${stock}`;
+    // 格式化結果顯示
+    function formatResult(pallets, boxes, units) {
+        let result = '';
+        if (pallets > 0) result += `${pallets}板 `;
+        if (boxes > 0) result += `${boxes}箱 `;
+        if (units > 0) result += `${units}支`;
+        return result.trim(); // 如果沒有任何數量，顯示為空
     }
 
-    resultDiv.innerHTML = result;
-    resultDiv.style.display = 'block';  // 顯示結果區塊
-}
+    // 更新備料總數
+    function updatePreparedTotal() {
+        const p1 = parseInt(document.getElementById('prepared1').value) || 0;
+        const p2 = parseInt(document.getElementById('prepared2').value) || 0;
+        document.getElementById('preparedTotal').value = p1 + p2;
+    }
+</script>
 
-// 格式化結果顯示
-function formatResult(pallets, boxes, units) {
-    let result = '';
-    if (pallets > 0) result += `${pallets}板 `;
-    if (boxes > 0) result += `${boxes}箱 `;
-    if (units > 0) result += `${units}支`;
-    return result.trim() || '0支'; // 如果沒有任何數量，顯示為 0支
-}
-
-// 更新備料總數
-function updatePreparedTotal() {
-    const p1 = parseInt(document.getElementById('prepared1').value) || 0;
-    const p2 = parseInt(document.getElementById('prepared2').value) || 0;
-    document.getElementById('preparedTotal').value = p1 + p2;
-}
-
-
-    // 退料計算邏輯
+<!-- 退料計算邏輯 -->
+<script>
     function calculateRightAuto() {
         const totalWeight = parseFloat(document.getElementById('totalWeight').value) || 0;
         const coreWeight = parseFloat(document.getElementById('coreWeight').value) || 0;
