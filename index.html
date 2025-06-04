@@ -372,11 +372,11 @@ input[type="checkbox"] {
 
         // 根據不同的輸入情況更新結果
         if (prep === null && unit === null && perPallet === null) {
-            result = `庫存數量：${total}支 (${total})`;
+            result = `庫存數量：${total}支`; // 隱藏 (XXX)
         } 
         else if (prep !== null && unit === null && perPallet === null) {
             const stock = total - prep;
-            result = `庫存數量：${formatResult(0, 0, stock)} (${stock})`;
+            result = `庫存數量：${formatResult(0, 0, stock)}`;
         } 
         else if (unit !== null && prep === null && perPallet === null) {
             const boxes = Math.floor(total / unit);
@@ -464,6 +464,7 @@ input[type="checkbox"] {
         document.getElementById('preparedTotal').value = p1 + p2;
     }
 </script>
+
 
 
 <!-- 退料計算邏輯 -->
