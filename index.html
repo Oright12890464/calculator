@@ -270,7 +270,11 @@ input[type="checkbox"] {
     <div class="buttons">
         <label for="boxCount">板箱數：</label>
         <input type="number" id="boxCount" min="1" placeholder="請輸入每板箱數　　＊推薦大量單位使用＊" oninput="updateBoxCountResult()">
-        <div id="boxCountDisplay" style="margin-top: 0.5rem; color: #444;">滿板數量：<span id="boxCountResult">0</span></div>
+        
+        <!-- 滿板數量顯示區域，初始隱藏 -->
+        <div id="boxCountDisplay" style="margin-top: 0.5rem; color: #444; display: none;">
+            滿板數量：<span id="boxCountResult">0</span>
+        </div>
 
         <div class="buttons">
             <button id="clear" onclick="clearFields()">清除</button>
@@ -318,6 +322,7 @@ input[type="checkbox"] {
         const boxCountInput = document.getElementById('boxCount');
         boxCountInput.value = '';
         document.getElementById('boxCountResult').textContent = '0';
+        document.getElementById('boxCountDisplay').style.display = 'none'; // 隱藏滿板數量顯示區域
 
         resultDiv.textContent = '';
         resultDiv.style.display = 'none'; // 隱藏結果區塊
@@ -329,6 +334,13 @@ input[type="checkbox"] {
         const boxCount = parseInt(document.getElementById('boxCount').value) || 0; // 板箱數
         const result = unit * boxCount; // 計算結果
         document.getElementById('boxCountResult').textContent = result; // 顯示結果
+
+        // 更新滿板數量顯示區域
+        if (unit > 0 && boxCount > 0) {
+            document.getElementById('boxCountDisplay').style.display = 'block'; // 顯示滿板數量
+        } else {
+            document.getElementById('boxCountDisplay').style.display = 'none'; // 隱藏滿板數量
+        }
 
         // 也更新庫存數量
         updateResult();
@@ -360,7 +372,7 @@ input[type="checkbox"] {
 
         // 根據不同的輸入情況更新結果
         if (prep === null && unit === null && perPallet === null) {
-            result = `庫存數量：${total}支`;
+            result = `庫存數量：${total}支 (${total})`;
         } 
         else if (prep !== null && unit === null && perPallet === null) {
             const stock = total - prep;
@@ -369,12 +381,12 @@ input[type="checkbox"] {
         else if (unit !== null && prep === null && perPallet === null) {
             const boxes = Math.floor(total / unit);
             const units = total % unit;
-            result = `庫存數量：${formatResult(0, boxes, units)}`;
+            result = `庫存數量：${formatResult(0, boxes, units)} (${total})`;
         } 
         else if (perPallet !== null && prep === null && unit === null) {
             const pallets = Math.floor(total / perPallet);
             const remain = total % perPallet;
-            result = `庫存數量：${formatResult(pallets, 0, remain)}`;
+            result = `庫存數量：${formatResult(pallets, 0, remain)} (${total})`;
         } 
         else if (prep !== null && unit !== null && perPallet === null) {
             const stock = total - prep;
@@ -410,7 +422,7 @@ input[type="checkbox"] {
             const boxes = Math.floor(remain / unit);
             const units = remain % unit;
 
-            result = `庫存數量：${formatResult(pallets, boxes, units)}`;
+            result = `庫存數量：${formatResult(pallets, boxes, units)} (${total})`;
         } 
         else if (prep !== null && unit !== null && perPallet !== null) {
             const stock = total - prep;
@@ -452,6 +464,7 @@ input[type="checkbox"] {
         document.getElementById('preparedTotal').value = p1 + p2;
     }
 </script>
+
 
 <!-- 退料計算邏輯 -->
 <script>
