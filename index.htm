@@ -216,14 +216,14 @@
 
 <div class="container">
     <div class="tab-buttons">
-        <button onclick="showTab('returnCalculator')" class="active">退料換算</button>
-        <button onclick="showTab('prepCalculator')">數量換算</button>
+        <button onclick="showTab('returnCalculator')" class="active">退料</button>
+        <button onclick="showTab('prepCalculator')">數量</button>
         <button id="openLogicBtn" onclick="openLogicModal()" style="margin-left: 10px;">邏輯表</button>
     </div>
 
     <!-- 退料換算 -->
     <div id="returnCalculator">
-        <h2>退料換算</h2>
+        <h2>退料</h2>
         <label>原始重量：
             <input type="number" id="totalWeight" step="any" min="0" placeholder="請輸入原始重量" oninput="calculateRightAuto()">
         </label>
@@ -498,7 +498,7 @@
                 document.getElementById(id).style.display = (id === tabId) ? 'block' : 'none';
             });
 
-            const tabName = tabId === 'prepCalculator' ? '數量換算' : '退料換算';
+            const tabName = tabId === 'prepCalculator' ? '數量' : '退料';
             document.querySelectorAll('.tab-buttons button').forEach(btn => {
                 btn.classList.toggle('active', btn.textContent.includes(tabName));
             });
