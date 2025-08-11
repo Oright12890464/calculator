@@ -1,8 +1,6 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>退料多功能轉換工具</title>
   <style>
     body {
@@ -214,120 +212,132 @@
     .logic-table tr:nth-child(even) {
       background-color: #f9f9f9;
     }
-/* 浮動計算機格子容器 */
-#calculator {
-    display: none;
-    position: fixed;
-    top: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: white;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    z-index: 10000;
-    min-width: 220px;
-    max-width: 280px; /* 限制最大寬度 */
-    box-sizing: border-box;
-}
+    
+    /* 浮動計算機格子容器 */
+    #calculator {
+        display: none;
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 10000;
+        min-width: 220px;
+        max-width: 280px; /* 限制最大寬度 */
+        box-sizing: border-box;
+    }
 
-#calcHeader {
-    cursor: move;
-    background: #f0f0f0;
-    padding: 5px;
-    border-radius: 8px 8px 0 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: bold;
-    font-size: 14px;
-}
+    #calcHeader {
+        cursor: move;
+        background: #f0f0f0;
+        padding: 5px;
+        border-radius: 8px 8px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+        font-size: 14px;
+    }
 
-#calcDisplay {
-    width: 100%;
-    margin-top: 5px;
-    height: 40px;
-    text-align: right;
-    font-size: 16px;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-weight: bold;
-    box-sizing: border-box;  /* 確保padding不會讓寬度超出 */
-    overflow-x: auto; /* 防止內容溢出時出現滾動 */
-}
+    #calcDisplay {
+        width: 100%;
+        margin-top: 5px;
+        height: 40px;
+        text-align: right;
+        font-size: 16px;
+        padding: 5px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-weight: bold;
+        box-sizing: border-box;  /* 確保padding不會讓寬度超出 */
+        overflow-x: auto; /* 防止內容溢出時出現滾動 */
+    }
 
-#closeCalcBtn {
-    border: none;
-    background: transparent;
-    font-size: 25px;
-    cursor: pointer;
-    color: #444444; /* 深灰色 */
-    font-weight: bold;
-}
+    #closeCalcBtn {
+        border: none;
+        background: transparent;
+        font-size: 25px;
+        cursor: pointer;
+        color: #444444; /* 深灰色 */
+        font-weight: bold;
+    }
 
-.calc-btn {
-    font-weight: bold;
-    font-size: 14px;
-    padding: 14px 0;
-    text-align: center;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    cursor: pointer;
-    user-select: none;
-    background-color: white;
-    color: black; /* 按鈕字體黑色 */
-    transition: background-color 0.3s;
-}
+    .calc-btn {
+        font-weight: bold;
+        font-size: 14px;
+        padding: 14px 0;
+        text-align: center;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        cursor: pointer;
+        user-select: none;
+        background-color: white;
+        color: black; /* 按鈕字體黑色 */
+        transition: background-color 0.3s;
+    }
 
-.calc-btn:hover {
-    background-color: #e0f2e9;
-}
+    .calc-btn:hover {
+        background-color: #e0f2e9;
+    }
 
-#clearCalc {
-    font-weight: bold;
-    font-size: 14px;
-    padding: 14px 0;
-    cursor: pointer;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: white;
-    color: black; /* 按鈕字體黑色 */
-    transition: background-color 0.3s;
-}
+    #clearCalc {
+        font-weight: bold;
+        font-size: 14px;
+        padding: 14px 0;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: white;
+        color: black; /* 按鈕字體黑色 */
+        transition: background-color 0.3s;
+    }
 
-#clearCalc:hover {
-    background-color: #e0f2e9;
-}
+    #clearCalc:hover {
+        background-color: #e0f2e9;
+    }
 
-#equalCalc {
-    grid-column: span 4;
-    background: #4CAF50;
-    color: white;
-    font-weight: bold;
-    font-size: 14px;
-    padding: 14px 0;
-    border-radius: 5px;
-    cursor: pointer;
-    border: none;
-    user-select: none;
-    transition: background-color 0.3s;
-}
+    #equalCalc {
+        grid-column: span 4;
+        background: #4CAF50;
+        color: white;
+        font-weight: bold;
+        font-size: 14px;
+        padding: 14px 0;
+        border-radius: 5px;
+        cursor: pointer;
+        border: none;
+        user-select: none;
+        transition: background-color 0.3s;
+    }
 
-#equalCalc:hover {
-    background-color: #3a9d3a;
-}
+    #equalCalc:hover {
+        background-color: #3a9d3a;
+    }
 
-div[style*="display:grid"] {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 5px;
-}
-
-
+    div[style*="display:grid"] {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 5px;
+    }
   </style>
+  <script>
+    // 禁止雙擊放大
+    document.addEventListener('dblclick', function(e) {
+      e.preventDefault();
+    }, { passive: false });
+
+    // 禁止多指縮放
+    document.addEventListener('touchstart', function(e) {
+      if (e.touches.length > 1) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+  </script>
 </head>
-<body>
+
 
 
 <div class="container">
