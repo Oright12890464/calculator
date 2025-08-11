@@ -31,18 +31,22 @@
     }
     .tab-buttons {
       display: flex;
-      justify-content: space-between;
+      flex-wrap: wrap;     /* 允許換行 */
+      gap: 8px;            /* 按鈕間距 */
+      align-items: center;
+      justify-content: flex-start;
       margin-bottom: 20px;
     }
     .tab-buttons button {
-      flex: 1;
-      padding: 10px;
+      flex: 1 1 auto;      /* 讓按鈕寬度彈性 */
+      min-width: 80px;     /* 按鈕最小寬度 */
+      padding: 8px 12px;
       border: 2px solid #4CAF50;
       background-color: white;
       color: #4CAF50;
       border-radius: 5px;
       cursor: pointer;
-      margin: 0 5px;
+      white-space: nowrap; /* 按鈕文字不換行 */
       transition: background-color 0.3s, color 0.3s;
     }
     .tab-buttons button.active {
@@ -210,16 +214,131 @@
     .logic-table tr:nth-child(even) {
       background-color: #f9f9f9;
     }
+/* 浮動計算機格子容器 */
+#calculator {
+    display: none;
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 10000;
+    min-width: 220px;
+    max-width: 280px; /* 限制最大寬度 */
+    box-sizing: border-box;
+}
+
+#calcHeader {
+    cursor: move;
+    background: #f0f0f0;
+    padding: 5px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+#calcDisplay {
+    width: 100%;
+    margin-top: 5px;
+    height: 40px;
+    text-align: right;
+    font-size: 16px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-weight: bold;
+    box-sizing: border-box;  /* 確保padding不會讓寬度超出 */
+    overflow-x: auto; /* 防止內容溢出時出現滾動 */
+}
+
+#closeCalcBtn {
+    border: none;
+    background: transparent;
+    font-size: 25px;
+    cursor: pointer;
+    color: #444444; /* 深灰色 */
+    font-weight: bold;
+}
+
+.calc-btn {
+    font-weight: bold;
+    font-size: 14px;
+    padding: 14px 0;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    user-select: none;
+    background-color: white;
+    color: black; /* 按鈕字體黑色 */
+    transition: background-color 0.3s;
+}
+
+.calc-btn:hover {
+    background-color: #e0f2e9;
+}
+
+#clearCalc {
+    font-weight: bold;
+    font-size: 14px;
+    padding: 14px 0;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    color: black; /* 按鈕字體黑色 */
+    transition: background-color 0.3s;
+}
+
+#clearCalc:hover {
+    background-color: #e0f2e9;
+}
+
+#equalCalc {
+    grid-column: span 4;
+    background: #4CAF50;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 14px 0;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    user-select: none;
+    transition: background-color 0.3s;
+}
+
+#equalCalc:hover {
+    background-color: #3a9d3a;
+}
+
+div[style*="display:grid"] {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+}
+
+
   </style>
 </head>
 <body>
 
+
 <div class="container">
-    <div class="tab-buttons">
-        <button onclick="showTab('returnCalculator')" class="active">退料</button>
-        <button onclick="showTab('prepCalculator')">數量</button>
-        <button id="openLogicBtn" onclick="openLogicModal()" style="margin-left: 10px;">邏輯表</button>
-    </div>
+
+  <div class="tab-buttons">
+    <button onclick="showTab('returnCalculator')" class="active">退料</button> <!-- 新退料按鈕 -->
+    <button onclick="showTab('prepCalculator')">數量</button> <!-- 新增數量按鈕 -->
+    <button id="openLogicBtn" onclick="openLogicModal()">邏輯表</button> <!-- 新增邏輯表按鈕 -->
+    <button id="openCalcBtn">計算機</button> <!-- 新增計算機按鈕 -->
+  </div>
+
 
     <!-- 退料換算 -->
     <div id="returnCalculator">
@@ -491,6 +610,85 @@
     </script>
 
     <script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const openBtn = document.getElementById('openCalcBtn');
+    const closeBtn = document.getElementById('closeCalcBtn');
+    const calc = document.getElementById('calculator');
+    const display = document.getElementById('calcDisplay');
+    const buttons = document.querySelectorAll('.calc-btn');
+    const clearBtn = document.getElementById('clearCalc');
+    const equalBtn = document.getElementById('equalCalc');
+    const header = document.getElementById('calcHeader');
+
+    // 開啟計算機
+    openBtn.addEventListener('click', () => {
+        calc.style.display = 'block';
+    });
+
+    // 關閉計算機
+    closeBtn.addEventListener('click', () => {
+        calc.style.display = 'none';
+    });
+
+    // 按鍵輸入
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            display.value += btn.textContent;
+        });
+    });
+
+    // 清除
+    clearBtn.addEventListener('click', () => {
+        display.value = '';
+    });
+
+    // 計算結果
+    equalBtn.addEventListener('click', () => {
+        try {
+            display.value = eval(display.value) || '';
+        } catch {
+            display.value = 'Error';
+        }
+    });
+
+    // 拖動功能（滑鼠 & 觸控）
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    const startDrag = (x, y) => {
+        isDragging = true;
+        const rect = calc.getBoundingClientRect();
+        offsetX = x - rect.left;
+        offsetY = y - rect.top;
+    };
+
+    const doDrag = (x, y) => {
+        if (!isDragging) return;
+        calc.style.left = `${x - offsetX}px`;
+        calc.style.top = `${y - offsetY}px`;
+        calc.style.transform = 'none';
+    };
+
+    const stopDrag = () => { isDragging = false; };
+
+    // 滑鼠事件
+    header.addEventListener('mousedown', e => startDrag(e.clientX, e.clientY));
+    document.addEventListener('mousemove', e => doDrag(e.clientX, e.clientY));
+    document.addEventListener('mouseup', stopDrag);
+
+    // 觸控事件
+    header.addEventListener('touchstart', e => {
+        const t = e.touches[0];
+        startDrag(t.clientX, t.clientY);
+    });
+    document.addEventListener('touchmove', e => {
+        const t = e.touches[0];
+        doDrag(t.clientX, t.clientY);
+    });
+    document.addEventListener('touchend', stopDrag);
+});
+
         // 切換標籤顯示
         function showTab(tabId) {
             const tabs = ['prepCalculator', 'returnCalculator'];
@@ -798,4 +996,44 @@
     </script>
 
 </body>
+
+<!-- 浮動計算機 -->
+<div id="calculator" style="display:none;position:fixed;top:80px;left:50%;transform:translateX(-50%);
+    background:white;padding:10px;border:1px solid #ccc;border-radius:10px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);z-index:10000;min-width:220px;">
+
+    <div id="calcHeader" style="cursor:move;background:#f0f0f0;padding:5px;border-radius:8px 8px 0 0;
+        display:flex;justify-content:space-between;align-items:center;">
+        <span>：）</span>
+        <button id="closeCalcBtn" style="border:none;background:transparent;font-size:25px;">關閉</button>
+    </div>
+
+    <input type="text" id="calcDisplay" readonly 
+        style="width:100%;margin-top:5px;height:40px;text-align:right;font-size:18px;padding:5px;border-radius:5px;border:1px solid #ccc;">
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:10px;">
+        <button class="calc-btn">7</button>
+        <button class="calc-btn">8</button>
+        <button class="calc-btn">9</button>
+        <button class="calc-btn">/</button>
+
+        <button class="calc-btn">4</button>
+        <button class="calc-btn">5</button>
+        <button class="calc-btn">6</button>
+        <button class="calc-btn">*</button>
+
+        <button class="calc-btn">1</button>
+        <button class="calc-btn">2</button>
+        <button class="calc-btn">3</button>
+        <button class="calc-btn">-</button>
+
+        <button class="calc-btn">0</button>
+        <button class="calc-btn">.</button>
+        <button id="clearCalc">C</button>
+        <button class="calc-btn">+</button>
+
+        <button id="equalCalc" style="grid-column: span 4;background:#4CAF50;color:white;">=</button>
+    </div>
+</div>
+
 </html>
