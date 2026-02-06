@@ -256,7 +256,6 @@
     color: white;
 }
 
-
   </style>
 </head>
 <body>
@@ -356,10 +355,10 @@
     <div id="prepCalculator" style="display:none;">
         <h2>收貨/備料/回算多功能轉換</h2>
         <label for="total">數量：</label>
-        <input type="number" id="total" min="1" placeholder="請輸入總數量" />
+        <input type="number" id="total" min="1" placeholder="請輸入總數量" oninput="updateResult()" />
 
         <label for="prep">備料數量：</label>
-        <input type="number" id="prep" min="0" placeholder="請輸入備料數量" />
+        <input type="number" id="prep" min="0" placeholder="請輸入備料數量" oninput="updateResult()" />
 
         <label for="unit">單位：</label>
         <input type="number" id="unit" min="1" placeholder="請輸入每箱單位" oninput="updateBoxCountResult()"/>
@@ -645,7 +644,7 @@
             } 
             else if (prep !== null && unit === null && perPallet === null) {
                 const stock = total - prep;
-                result = `庫存數量：${formatResult(0, 0, stock)}`;
+                result = `現況數量：${total}支<br>備料數量：${prep}支<br>庫存數量：${stock}支`;
             } 
             else if (unit !== null && prep === null && perPallet === null) {
                 const boxes = Math.floor(total / unit);
@@ -665,7 +664,9 @@
                 const stockUnits = stock % unit;
 
                 if (prep > 0) {
-                    result = `備料數量：${formatResult(0, prepBoxes, prepUnits)} (${prep})<br>庫存數量：${formatResult(0, stockBoxes, stockUnits)} (${stock})`;
+                    const currentBoxes = Math.floor(total / unit);
+                    const currentUnits = total % unit;
+                    result = `現況數量：${formatResult(0, currentBoxes, currentUnits)} (${total})<br>備料數量：${formatResult(0, prepBoxes, prepUnits)} (${prep})<br>庫存數量：${formatResult(0, stockBoxes, stockUnits)} (${stock})`;
                 } else {
                     result = `庫存數量：${formatResult(0, stockBoxes, stockUnits)} (${stock})`;
                 }
@@ -679,7 +680,9 @@
                 const stockRemain = stock % perPallet;
 
                 if (prep > 0) {
-                    result = `備料數量：${formatResult(prepPallets, 0, prepRemain)} (${prep})<br>庫存數量：${formatResult(stockPallets, 0, stockRemain)} (${stock})`;
+                    const currentPallets = Math.floor(total / perPallet);
+                    const currentRemain = total % perPallet;
+                    result = `現況數量：${formatResult(currentPallets, 0, currentRemain)} (${total})<br>備料數量：${formatResult(prepPallets, 0, prepRemain)} (${prep})<br>庫存數量：${formatResult(stockPallets, 0, stockRemain)} (${stock})`;
                 } else {
                     result = `庫存數量：${formatResult(stockPallets, 0, stockRemain)} (${stock})`;
                 }
@@ -706,7 +709,9 @@
                 const stockUnits = stockRemain % unit;
 
                 if (prep > 0) {
-                    result = `備料數量：${formatResult(prepPallets, prepBoxes, prepUnits)} (${prep})<br>庫存數量：${formatResult(stockPallets, stockBoxes, stockUnits)} (${stock})`;
+                    const currentPallets = Math.floor(total / perPallet);
+                    const currentRemain = total % perPallet;
+                    result = `現況數量：${formatResult(currentPallets, 0, currentRemain)} (${total})<br>備料數量：${formatResult(prepPallets, prepBoxes, prepUnits)} (${prep})<br>庫存數量：${formatResult(stockPallets, stockBoxes, stockUnits)} (${stock})`;
                 } else {
                     result = `庫存數量：${formatResult(stockPallets, stockBoxes, stockUnits)} (${stock})`;
                 }
