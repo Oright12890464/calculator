@@ -617,118 +617,148 @@
 
             updateResult();
         }
+function updateResult() {
+    const total = parseInt(totalInput.value);
+    const prep = prepInput.value === '' ? null : parseInt(prepInput.value);
+    const unit = unitInput.value === '' ? null : parseInt(unitInput.value);
+    const perPallet = perPalletInput.value === '' ? null : parseInt(perPalletInput.value);
 
-        function updateResult() {
-            const total = parseInt(totalInput.value);
-            const prep = prepInput.value === '' ? null : parseInt(prepInput.value);
-            const unit = unitInput.value === '' ? null : parseInt(unitInput.value);
-            const perPallet = perPalletInput.value === '' ? null : parseInt(perPalletInput.value);
+    resultDiv.textContent = '';
 
-            resultDiv.textContent = '';
+    if (isNaN(total) || total <= 0) {
+        resultDiv.textContent = '請輸入有效的數量（總數），且必須大於0';
+        return;
+    }
 
-            if (isNaN(total) || total <= 0) {
-                resultDiv.textContent = '請輸入有效的數量（總數），且必須大於0';
-                return;
-            }
+    if (prep !== null && prep > total) {
+        resultDiv.textContent = '備料數量不能大於總數量';
+        return;
+    }
 
-            if (prep !== null && prep > total) {
-                resultDiv.textContent = '備料數量不能大於總數量';
-                return;
-            }
+    let result = '';
 
-            let result = '';
-            let remaining = 0;
+    // ✅ 統一轉換函式
+    function convert(totalQty) {
+        let pallets = 0, boxes = 0, units = 0;
 
-            if (prep === null && unit === null && perPallet === null) {
-                result = `庫存數量：${total}支`;
-            } 
-            else if (prep !== null && unit === null && perPallet === null) {
-                const stock = total - prep;
-                result = `現況數量：${total}支<br>備料數量：${prep}支<br>庫存數量：${stock}支`;
-            } 
-            else if (unit !== null && prep === null && perPallet === null) {
-                const boxes = Math.floor(total / unit);
-                const units = total % unit;
-                result = `庫存數量：${formatResult(0, boxes, units)} (${total})`;
-            } 
-            else if (perPallet !== null && prep === null && unit === null) {
-                const pallets = Math.floor(total / perPallet);
-                const remain = total % perPallet;
-                result = `庫存數量：${formatResult(pallets, 0, remain)} (${total})`;
-            } 
-            else if (prep !== null && unit !== null && perPallet === null) {
-                const stock = total - prep;
-                const prepBoxes = Math.floor(prep / unit);
-                const prepUnits = prep % unit;
-                const stockBoxes = Math.floor(stock / unit);
-                const stockUnits = stock % unit;
-
-                if (prep > 0) {
-                    const currentBoxes = Math.floor(total / unit);
-                    const currentUnits = total % unit;
-                    result = `現況數量：${formatResult(0, currentBoxes, currentUnits)} (${total})<br>備料數量：${formatResult(0, prepBoxes, prepUnits)} (${prep})<br>庫存數量：${formatResult(0, stockBoxes, stockUnits)} (${stock})`;
-                } else {
-                    result = `庫存數量：${formatResult(0, stockBoxes, stockUnits)} (${stock})`;
-                }
-                remaining = stock;
-            } 
-            else if (prep !== null && perPallet !== null && unit === null) {
-                const stock = total - prep;
-                const prepPallets = Math.floor(prep / perPallet);
-                const prepRemain = prep % perPallet;
-                const stockPallets = Math.floor(stock / perPallet);
-                const stockRemain = stock % perPallet;
-
-                if (prep > 0) {
-                    const currentPallets = Math.floor(total / perPallet);
-                    const currentRemain = total % perPallet;
-                    result = `現況數量：${formatResult(currentPallets, 0, currentRemain)} (${total})<br>備料數量：${formatResult(prepPallets, 0, prepRemain)} (${prep})<br>庫存數量：${formatResult(stockPallets, 0, stockRemain)} (${stock})`;
-                } else {
-                    result = `庫存數量：${formatResult(stockPallets, 0, stockRemain)} (${stock})`;
-                }
-                remaining = stock;
-            } 
-            else if (unit !== null && perPallet !== null && prep === null) {
-                const pallets = Math.floor(total / perPallet);
-                const remain = total % perPallet;
-                const boxes = Math.floor(remain / unit);
-                const units = remain % unit;
-
-                result = `庫存數量：${formatResult(pallets, boxes, units)} (${total})`;
-            } 
-            else if (prep !== null && unit !== null && perPallet !== null) {
-                const stock = total - prep;
-                const prepPallets = Math.floor(prep / perPallet);
-                const prepRemain = prep % perPallet;
-                const prepBoxes = Math.floor(prepRemain / unit);
-                const prepUnits = prepRemain % unit;
-
-                const stockPallets = Math.floor(stock / perPallet);
-                const stockRemain = stock % perPallet;
-                const stockBoxes = Math.floor(stockRemain / unit);
-                const stockUnits = stockRemain % unit;
-
-                if (prep > 0) {
-                    const currentPallets = Math.floor(total / perPallet);
-                    const currentRemain = total % perPallet;
-                    result = `現況數量：${formatResult(currentPallets, 0, currentRemain)} (${total})<br>備料數量：${formatResult(prepPallets, prepBoxes, prepUnits)} (${prep})<br>庫存數量：${formatResult(stockPallets, stockBoxes, stockUnits)} (${stock})`;
-                } else {
-                    result = `庫存數量：${formatResult(stockPallets, stockBoxes, stockUnits)} (${stock})`;
-                }
-                remaining = stock;
-            }
-
-            resultDiv.innerHTML = result;
-            resultDiv.style.display = 'block';
+        if (perPallet !== null) {
+            pallets = Math.floor(totalQty / perPallet);
+            totalQty = totalQty % perPallet;
         }
 
-        function formatResult(pallets, boxes, units) {
-            let result = '';
-            if (pallets > 0) result += `${pallets}板 `;
-            if (boxes > 0) result += `${boxes}箱 `;
-            if (units > 0) result += `${units}支`;
-            return result.trim();
+        if (unit !== null) {
+            boxes = Math.floor(totalQty / unit);
+            totalQty = totalQty % unit;
         }
+
+        units = totalQty;
+
+        return { pallets, boxes, units };
+    }
+
+    // ✅ 格式化
+    function formatResult(pallets, boxes, units) {
+        let result = '';
+        if (pallets > 0) result += `${pallets}板 `;
+        if (boxes > 0) result += `${boxes}箱 `;
+        if (units > 0) result += `${units}支`;
+        return result.trim() || '0支';
+    }
+
+    // =========================
+    // 情境判斷
+    // =========================
+
+    // 只有總數
+    if (prep === null && unit === null && perPallet === null) {
+        result = `庫存數量：${total}支`;
+    }
+
+    // 有備料（純數量）
+    else if (prep !== null && unit === null && perPallet === null) {
+        const stock = total - prep;
+        result =
+            `現況數量：${total}支<br>` +
+            `備料數量：${prep}支<br>` +
+            `庫存數量：${stock}支`;
+    }
+
+    // 有單位（箱）
+    else if (unit !== null && perPallet === null && prep === null) {
+        const c = convert(total);
+        result = `庫存數量：${formatResult(0, c.boxes, c.units)} (${total})`;
+    }
+
+    // 有板
+    else if (perPallet !== null && unit === null && prep === null) {
+        const c = convert(total);
+        result = `庫存數量：${formatResult(c.pallets, 0, c.units)} (${total})`;
+    }
+
+    // 板 + 箱（無備料）
+    else if (unit !== null && perPallet !== null && prep === null) {
+        const c = convert(total);
+        result = `庫存數量：${formatResult(c.pallets, c.boxes, c.units)} (${total})`;
+    }
+
+    // 備料 + 箱
+    else if (prep !== null && unit !== null && perPallet === null) {
+        const stock = total - prep;
+
+        const current = convert(total);
+        const prepC = convert(prep);
+        const stockC = convert(stock);
+
+        if (prep > 0) {
+            result =
+                `現況數量：${formatResult(0, current.boxes, current.units)} (${total})<br>` +
+                `備料數量：${formatResult(0, prepC.boxes, prepC.units)} (${prep})<br>` +
+                `庫存數量：${formatResult(0, stockC.boxes, stockC.units)} (${stock})`;
+        } else {
+            result = `庫存數量：${formatResult(0, stockC.boxes, stockC.units)} (${stock})`;
+        }
+    }
+
+    // 備料 + 板
+    else if (prep !== null && perPallet !== null && unit === null) {
+        const stock = total - prep;
+
+        const current = convert(total);
+        const prepC = convert(prep);
+        const stockC = convert(stock);
+
+        if (prep > 0) {
+            result =
+                `現況數量：${formatResult(current.pallets, 0, current.units)} (${total})<br>` +
+                `備料數量：${formatResult(prepC.pallets, 0, prepC.units)} (${prep})<br>` +
+                `庫存數量：${formatResult(stockC.pallets, 0, stockC.units)} (${stock})`;
+        } else {
+            result = `庫存數量：${formatResult(stockC.pallets, 0, stockC.units)} (${stock})`;
+        }
+    }
+
+    // ✅ 全部都有
+    else if (prep !== null && unit !== null && perPallet !== null) {
+        const stock = total - prep;
+
+        const current = convert(total);
+        const prepC = convert(prep);
+        const stockC = convert(stock);
+
+        if (prep > 0) {
+            result =
+                `現況數量：${formatResult(current.pallets, current.boxes, current.units)} (${total})<br>` +
+                `備料數量：${formatResult(prepC.pallets, prepC.boxes, prepC.units)} (${prep})<br>` +
+                `庫存數量：${formatResult(stockC.pallets, stockC.boxes, stockC.units)} (${stock})`;
+        } else {
+            result =
+                `庫存數量：${formatResult(stockC.pallets, stockC.boxes, stockC.units)} (${stock})`;
+        }
+    }
+
+    resultDiv.innerHTML = result;
+    resultDiv.style.display = 'block';
+}
 
         function updatePreparedTotal() {
             const p1 = parseInt(document.getElementById('prepared1').value) || 0;
