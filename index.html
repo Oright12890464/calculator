@@ -351,62 +351,61 @@
         <div class="result" id="leftResult" style="display:none;"></div>
     </div>
 
-    <!-- 數量換算 -->
-    <div id="prepCalculator" style="display:none;">
-        <h2>收貨/備料/回算多功能轉換</h2>
-        <label for="total">數量：</label>
-        <input type="number" id="total" min="1" placeholder="請輸入總數量" oninput="updateResult()" />
+<!-- 數量換算 -->
+<div id="prepCalculator" style="display:none;">
+    <h2>收貨/備料/回算多功能轉換</h2>
 
-        <label for="prep">備料數量：</label>
-        <input type="number" id="prep" min="0" placeholder="請輸入備料數量" oninput="updateResult()" />
+    <label for="total">數量：</label>
+    <input type="number" id="total" min="1" placeholder="請輸入總數量" oninput="updateResult()" />
 
-        <label for="unit">單位：</label>
-        <input type="number" id="unit" min="1" placeholder="請輸入每箱單位" oninput="updateBoxCountResult()"/>
+    <label for="prep">備料數量：</label>
+    <input type="number" id="prep" min="0" placeholder="請輸入備料數量" oninput="updateResult()" />
 
-        <label for="perPallet">板數：</label>
-        <input type="number" id="perPallet" min="1" placeholder="請輸入每板單位" oninput="updateBoxCountResult()"/>
+    <label for="unit">單位：</label>
+    <input type="number" id="unit" min="1" placeholder="請輸入每箱單位" oninput="updateResult(); updateBoxCountResult();" />
 
-        <div class="buttons">
-            <label for="boxCount">板箱數：</label>
-            <input type="number" id="boxCount" min="1" placeholder="請輸入每板箱數" oninput="updateBoxCountResult()">
-            
-            <!-- 滿板數量顯示區域，初始隱藏 -->
-            <div id="boxCountDisplay" style="margin-top: 0.5rem; color: #444; display: none;">
-                滿板數量：<span id="boxCountResult">0</span>
-            </div>
+    <!-- ✅ 新增：層數 -->
+    <label for="layerUnit">層數：</label>
+    <input type="number" id="layerUnit" min="1" placeholder="請輸入每層數量" oninput="updateResult()" />
 
-            <div class="buttons">
-                <button id="clear" onclick="clearFields()" style="width: 100%;">清除</button>
-                <div id="result" class="result" style="display:none;"></div>
-            </div>
-        </div>
+    <label for="perPallet">板數：</label>
+    <input type="number" id="perPallet" min="1" placeholder="請輸入每板單位" oninput="updateResult(); updateBoxCountResult();" />
+
+    <label for="boxCount">板箱數：</label>
+    <input type="number" id="boxCount" min="1" placeholder="請輸入每板箱數" oninput="updateBoxCountResult()">
+
+    <!-- 滿板數量顯示 -->
+    <div id="boxCountDisplay" style="margin-top: 0.5rem; color: #444; display: none;">
+        滿板數量：<span id="boxCountResult">0</span>
     </div>
+
+    <div class="buttons">
+        <button id="clear" onclick="clearFields()" style="width: 100%;">清除</button>
+        <div id="result" class="result" style="display:none;"></div>
+    </div>
+</div>
 
 <!-- 計算機按鈕 -->
 <div id="calculator">
     <input type="text" id="calcDisplay" readonly />
     <div class="calc-btn-container">
-    <div class="calc-btn">7</div>
-    <div class="calc-btn">8</div>
-    <div class="calc-btn">9</div>
-    <div class="calc-btn">/</div>
-
-    <div class="calc-btn">4</div>
-    <div class="calc-btn">5</div>
-    <div class="calc-btn">6</div>
-    <div class="calc-btn">*</div>
-
-    <div class="calc-btn">1</div>
-    <div class="calc-btn">2</div>
-    <div class="calc-btn">3</div>
-    <div class="calc-btn">-</div>
-
-    <div class="calc-btn">C</div>
-    <div class="calc-btn">0</div>
-    <div class="calc-btn">.</div>
-    <div class="calc-btn">+</div>
-
-    <div class="calc-btn" style="grid-column: span 4; text-align:center;">=</div>
+        <div class="calc-btn">7</div>
+        <div class="calc-btn">8</div>
+        <div class="calc-btn">9</div>
+        <div class="calc-btn">/</div>
+        <div class="calc-btn">4</div>
+        <div class="calc-btn">5</div>
+        <div class="calc-btn">6</div>
+        <div class="calc-btn">*</div>
+        <div class="calc-btn">1</div>
+        <div class="calc-btn">2</div>
+        <div class="calc-btn">3</div>
+        <div class="calc-btn">-</div>
+        <div class="calc-btn">C</div>
+        <div class="calc-btn">0</div>
+        <div class="calc-btn">=</div>
+        <div class="calc-btn">+</div>
+    </div>
 </div>
 
 
@@ -660,12 +659,31 @@ function updateResult() {
         return { pallets, boxes, units };
     }
 
-    // ✅ 格式化
+    // ✅ 格式化（🔥已加入「層數」功能）
     function formatResult(pallets, boxes, units) {
         let result = '';
+
+        const layerUnit = parseInt(document.getElementById('layerUnit')?.value);
+
+        let layers = 0;
+        let remainUnits = units;
+
+        // 👉 有填層數才拆 units
+        if (!isNaN(layerUnit) && layerUnit > 0 && units > 0) {
+            layers = Math.floor(units / layerUnit);
+            remainUnits = units % layerUnit;
+        }
+
         if (pallets > 0) result += `${pallets}板 `;
         if (boxes > 0) result += `${boxes}箱 `;
-        if (units > 0) result += `${units}支`;
+
+        if (!isNaN(layerUnit) && layerUnit > 0) {
+            if (layers > 0) result += `${layers}層 `;
+            if (remainUnits > 0) result += `${remainUnits}支`;
+        } else {
+            if (units > 0) result += `${units}支`;
+        }
+
         return result.trim() || '0支';
     }
 
@@ -929,4 +947,3 @@ calcBtns.forEach(btn => {
 
 </body>
 </html>
-
