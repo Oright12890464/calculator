@@ -385,14 +385,6 @@
     <label for="perPallet">板數：</label>
     <input type="number" id="perPallet" min="1" placeholder="請輸入每板單位" oninput="updateResult(); updateBoxCountResult();" />
 
-    <label for="boxCount">板箱數：</label>
-    <input type="number" id="boxCount" min="1" placeholder="請輸入每板箱數" oninput="updateBoxCountResult()">
-
-    <!-- 滿板數量顯示 -->
-    <div id="boxCountDisplay" style="margin-top: 0.5rem; color: #444; display: none;">
-        滿板數量：<span id="boxCountResult">0</span>
-    </div>
-
     <div class="buttons">
         <button id="clear" onclick="clearFields()" style="width: 100%;">清除</button>
         <div id="result" class="result" style="display:none;"></div>
@@ -511,8 +503,8 @@
                     <tr>
                         <td>第一種<br>實際退料數量大於應退料數</td>
                         <td>
-                            藍單良品:YES(實際退料數-應退料數)<br>
-                            藍單不良品:YES(藍單退料數-藍單良品)
+                            藍單良品：YES(實際退料數-應退料數)<br>
+                            藍單不良品：YES(藍單退料數-藍單良品)
                         </td>
                         <td>
                             
@@ -521,12 +513,12 @@
                     <tr>
                         <td>第二種<br>實際退料數量小於應退料數</td>
                         <td>
-                            領料單:YES(應退料數-退料數)<br>
-                            藍單不良:YES(藍單退料數+領料單數)
+                            領料單：YES(應退料數-退料數)<br>
+                            藍單不良：YES(藍單退料數+領料單數)
                         </td>
                         <td>
-                            領料單:YES(應退料數-退料數)<br>
-                            藍單不良:YES(同領料單數)
+                            領料單：YES(應退料數-退料數)<br>
+                            藍單不良：YES(同領料單數)
                         </td>
                     </tr>
                 </tbody>
@@ -599,111 +591,163 @@
         // 初始顯示介面
         showTab('returnCalculator');
 
-        // 數量換算邏輯
-        const totalInput = document.getElementById('total');
-        const prepInput = document.getElementById('prep');
-        const unitInput = document.getElementById('unit');
-        const perPalletInput = document.getElementById('perPallet');
-        const resultDiv = document.getElementById('result');
 
-        totalInput.addEventListener('input', updateResult);
-        prepInput.addEventListener('input', updateResult);
-        unitInput.addEventListener('input', updateResult);
-        perPalletInput.addEventListener('input', updateResult);
+// 數量換算邏輯
+const totalInput = document.getElementById('total');
+const prepInput = document.getElementById('prep');
+const unitInput = document.getElementById('unit');
+const perPalletInput = document.getElementById('perPallet');
+const resultDiv = document.getElementById('result');
 
-        function clearFields() {
-            totalInput.value = '';
-            prepInput.value = '';
-            unitInput.value = '';
-            perPalletInput.value = '';
-            const boxCountInput = document.getElementById('boxCount');
-            boxCountInput.value = '';
-            document.getElementById('boxCountResult').textContent = '0';
-            document.getElementById('boxCountDisplay').style.display = 'none';
+totalInput.addEventListener('input', updateResult);
+prepInput.addEventListener('input', updateResult);
+unitInput.addEventListener('input', updateResult);
+perPalletInput.addEventListener('input', updateResult);
 
-            resultDiv.textContent = '';
-            resultDiv.style.display = 'none';
-        }
+function clearFields() {
 
-        function updateBoxCountResult() {
-            const unit = parseInt(unitInput.value) || 0;
-            const boxCount = parseInt(document.getElementById('boxCount').value) || 0;
-            const result = unit * boxCount;
-            document.getElementById('boxCountResult').textContent = result;
+    totalInput.value = '';
+    prepInput.value = '';
+    unitInput.value = '';
+    document.getElementById('layerUnit').value = '';
+    perPalletInput.value = '';
 
-            if (unit > 0 && boxCount > 0) {
-                document.getElementById('boxCountDisplay').style.display = 'block';
-            } else {
-                document.getElementById('boxCountDisplay').style.display = 'none';
-            }
+    const boxCountInput = document.getElementById('boxCount');
 
-            updateResult();
-        }
+    boxCountInput.value = '';
+
+    document.getElementById('boxCountResult').textContent = '0';
+    document.getElementById('boxCountDisplay').style.display = 'none';
+
+    resultDiv.textContent = '';
+    resultDiv.style.display = 'none';
+}
+
+
+
 function updateResult() {
+
     const total = parseInt(totalInput.value);
-    const prep = prepInput.value === '' ? null : parseInt(prepInput.value);
-    const unit = unitInput.value === '' ? null : parseInt(unitInput.value);
-    const perPallet = perPalletInput.value === '' ? null : parseInt(perPalletInput.value);
+
+    const prep =
+        prepInput.value === ''
+            ? null
+            : parseInt(prepInput.value);
+
+    const unit =
+        unitInput.value === ''
+            ? null
+            : parseInt(unitInput.value);
+
+    const perPallet =
+        perPalletInput.value === ''
+            ? null
+            : parseInt(perPalletInput.value);
+
+    const layerUnit =
+        document.getElementById('layerUnit').value === ''
+            ? null
+            : parseInt(document.getElementById('layerUnit').value);
 
     resultDiv.textContent = '';
 
+    // =========================
+    // 基本檢查
+    // =========================
+
     if (isNaN(total) || total <= 0) {
-        resultDiv.textContent = '請輸入有效的數量（總數），且必須大於0';
+
+        resultDiv.textContent =
+            '請輸入有效的數量（總數），且必須大於0';
+
+        resultDiv.style.display = 'block';
+
         return;
     }
 
     if (prep !== null && prep > total) {
-        resultDiv.textContent = '備料數量不能大於總數量';
+
+        resultDiv.textContent =
+            '備料數量不能大於總數量';
+
+        resultDiv.style.display = 'block';
+
         return;
     }
 
     let result = '';
 
-    // ✅ 統一轉換函式
-    function convert(totalQty) {
-        let pallets = 0, boxes = 0, units = 0;
+    // =========================
+    // 統一轉換
+    // =========================
 
-        if (perPallet !== null) {
+    function convert(totalQty) {
+
+        let pallets = 0;
+        let boxes = 0;
+        let layers = 0;
+        let units = 0;
+
+        // 板
+        if (perPallet !== null && perPallet > 0) {
+
             pallets = Math.floor(totalQty / perPallet);
+
             totalQty = totalQty % perPallet;
         }
 
-        if (unit !== null) {
+        // 箱
+        if (unit !== null && unit > 0) {
+
             boxes = Math.floor(totalQty / unit);
+
             totalQty = totalQty % unit;
         }
 
+        // 層
+        if (layerUnit !== null && layerUnit > 0) {
+
+            layers = Math.floor(totalQty / layerUnit);
+
+            totalQty = totalQty % layerUnit;
+        }
+
+        // 支
         units = totalQty;
 
-        return { pallets, boxes, units };
+        return {
+            pallets,
+            boxes,
+            layers,
+            units
+        };
     }
 
-    // ✅ 格式化（🔥已加入「層數」功能）
-    function formatResult(pallets, boxes, units) {
-        let result = '';
+    // =========================
+    // 格式化
+    // =========================
 
-        const layerUnit = parseInt(document.getElementById('layerUnit')?.value);
+    function formatResult(data) {
 
-        let layers = 0;
-        let remainUnits = units;
+        let text = '';
 
-        // 👉 有填層數才拆 units
-        if (!isNaN(layerUnit) && layerUnit > 0 && units > 0) {
-            layers = Math.floor(units / layerUnit);
-            remainUnits = units % layerUnit;
+        if (data.pallets > 0) {
+            text += `${data.pallets}板 `;
         }
 
-        if (pallets > 0) result += `${pallets}板 `;
-        if (boxes > 0) result += `${boxes}箱 `;
-
-        if (!isNaN(layerUnit) && layerUnit > 0) {
-            if (layers > 0) result += `${layers}層 `;
-            if (remainUnits > 0) result += `${remainUnits}支`;
-        } else {
-            if (units > 0) result += `${units}支`;
+        if (data.boxes > 0) {
+            text += `${data.boxes}箱 `;
         }
 
-        return result.trim() || '0支';
+        if (data.layers > 0) {
+            text += `${data.layers}層 `;
+        }
+
+        if (data.units > 0) {
+            text += `${data.units}支`;
+        }
+
+        return text.trim() || '0支';
     }
 
     // =========================
@@ -711,39 +755,89 @@ function updateResult() {
     // =========================
 
     // 只有總數
-    if (prep === null && unit === null && perPallet === null) {
-        result = `庫存數量：${total}支`;
+    if (
+        prep === null &&
+        unit === null &&
+        perPallet === null &&
+        layerUnit === null
+    ) {
+
+        result =
+            `庫存數量：${total}支`;
     }
 
-    // 有備料（純數量）
-    else if (prep !== null && unit === null && perPallet === null) {
+    // 只有層數
+    else if (
+        prep === null &&
+        unit === null &&
+        perPallet === null &&
+        layerUnit !== null
+    ) {
+
+        const c = convert(total);
+
+        result =
+            `庫存數量：${formatResult(c)} (${total})`;
+    }
+
+    // 備料（純數量）
+    else if (
+        prep !== null &&
+        unit === null &&
+        perPallet === null &&
+        layerUnit === null
+    ) {
+
         const stock = total - prep;
+
         result =
             `現況數量：${total}支<br>` +
             `備料數量：${prep}支<br>` +
             `庫存數量：${stock}支`;
     }
 
-    // 有單位（箱）
-    else if (unit !== null && perPallet === null && prep === null) {
+    // 有箱
+    else if (
+        unit !== null &&
+        perPallet === null &&
+        prep === null
+    ) {
+
         const c = convert(total);
-        result = `庫存數量：${formatResult(0, c.boxes, c.units)} (${total})`;
+
+        result =
+            `庫存數量：${formatResult(c)} (${total})`;
     }
 
     // 有板
-    else if (perPallet !== null && unit === null && prep === null) {
+    else if (
+        perPallet !== null &&
+        unit === null &&
+        prep === null
+    ) {
+
         const c = convert(total);
-        result = `庫存數量：${formatResult(c.pallets, 0, c.units)} (${total})`;
+
+        result =
+            `庫存數量：${formatResult(c)} (${total})`;
     }
 
-    // 板 + 箱（無備料）
-    else if (unit !== null && perPallet !== null && prep === null) {
+    // 板 + 箱
+    else if (
+        unit !== null &&
+        perPallet !== null &&
+        prep === null
+    ) {
+
         const c = convert(total);
-        result = `庫存數量：${formatResult(c.pallets, c.boxes, c.units)} (${total})`;
+
+        result =
+            `庫存數量：${formatResult(c)} (${total})`;
     }
 
-    // 備料 + 箱
-    else if (prep !== null && unit !== null && perPallet === null) {
+    // 有備料（全部模式）
+    else if (prep !== null) {
+
         const stock = total - prep;
 
         const current = convert(total);
@@ -751,55 +845,23 @@ function updateResult() {
         const stockC = convert(stock);
 
         if (prep > 0) {
+
             result =
-                `現況數量：${formatResult(0, current.boxes, current.units)} (${total})<br>` +
-                `備料數量：${formatResult(0, prepC.boxes, prepC.units)} (${prep})<br>` +
-                `庫存數量：${formatResult(0, stockC.boxes, stockC.units)} (${stock})`;
+                `現況數量：${formatResult(current)} (${total})<br>` +
+                `備料數量：${formatResult(prepC)} (${prep})<br>` +
+                `庫存數量：${formatResult(stockC)} (${stock})`;
+
         } else {
-            result = `庫存數量：${formatResult(0, stockC.boxes, stockC.units)} (${stock})`;
-        }
-    }
 
-    // 備料 + 板
-    else if (prep !== null && perPallet !== null && unit === null) {
-        const stock = total - prep;
-
-        const current = convert(total);
-        const prepC = convert(prep);
-        const stockC = convert(stock);
-
-        if (prep > 0) {
             result =
-                `現況數量：${formatResult(current.pallets, 0, current.units)} (${total})<br>` +
-                `備料數量：${formatResult(prepC.pallets, 0, prepC.units)} (${prep})<br>` +
-                `庫存數量：${formatResult(stockC.pallets, 0, stockC.units)} (${stock})`;
-        } else {
-            result = `庫存數量：${formatResult(stockC.pallets, 0, stockC.units)} (${stock})`;
-        }
-    }
-
-    // ✅ 全部都有
-    else if (prep !== null && unit !== null && perPallet !== null) {
-        const stock = total - prep;
-
-        const current = convert(total);
-        const prepC = convert(prep);
-        const stockC = convert(stock);
-
-        if (prep > 0) {
-            result =
-                `現況數量：${formatResult(current.pallets, current.boxes, current.units)} (${total})<br>` +
-                `備料數量：${formatResult(prepC.pallets, prepC.boxes, prepC.units)} (${prep})<br>` +
-                `庫存數量：${formatResult(stockC.pallets, stockC.boxes, stockC.units)} (${stock})`;
-        } else {
-            result =
-                `庫存數量：${formatResult(stockC.pallets, stockC.boxes, stockC.units)} (${stock})`;
+                `庫存數量：${formatResult(stockC)} (${stock})`;
         }
     }
 
     resultDiv.innerHTML = result;
     resultDiv.style.display = 'block';
 }
+
 
         function updatePreparedTotal() {
             const p1 = parseInt(document.getElementById('prepared1').value) || 0;
@@ -888,9 +950,9 @@ function updateResult() {
             giftReturn = Math.max(giftReturn, 0);
 
             const outputLines = [
-                `領料單: ${requirePick}`,
-                `藍單良品: ${goodReturn}`,
-                `藍單不良品: ${badReturn}`
+                `領料單： ${requirePick}`,
+                `藍單良品： ${goodReturn}`,
+                `藍單不良品： ${badReturn}`
             ];
 
             if (giftReturn > 0) {
