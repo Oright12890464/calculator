@@ -339,22 +339,21 @@
     </span>
 </label>
         </label>
-        <label>貼紙備料總數：
+        <label>貼紙備料總數量：
             <input type="number" id="preparedTotal" class="readonly" readonly>
         </label>
-        <label>工單製令數：
-            <input type="number" id="workOrder" min="0" placeholder="請輸入工單製令數">
+        <label>工單製令數量：
+            <input type="number" id="workOrder" min="0" placeholder="請輸入工單製令數量">
         </label>
         
-        <label>實際退料數：
-            <input type="number" id="actualReturn" class="readonly" readonly>
+        <label>實際退料數量：
+            <input type="number" id="actualReturn" min="0" placeholder="請輸入實際退料數量">
             <span class="checkbox-group">
-                <label class="checkbox-option"><input type="checkbox" id="manualToggle" onclick="toggleManualInput()"> 勾選可自行輸入</label>
             </span>
         </label>
 
-        <label>藍單退料數：
-            <input type="number" id="blueReturn" min="0" placeholder="請輸入藍單料數">
+        <label>藍單退料數量：
+            <input type="number" id="blueReturn" min="0" placeholder="請輸入藍單料數量">
         </label>
 
         <div class="button-group">
@@ -383,7 +382,7 @@
     <input type="number" id="layerUnit" min="1" placeholder="請輸入每層數量" oninput="updateResult()" />
 
     <label for="perPallet">板數：</label>
-    <input type="number" id="perPallet" min="1" placeholder="請輸入每板單位" oninput="updateResult(); updateBoxCountResult();" />
+    <input type="number" id="perPallet" min="1" placeholder="請輸入每板數量" oninput="updateResult(); updateBoxCountResult();" />
 
     <div class="buttons">
         <button id="clear" onclick="clearFields()" style="width: 100%;">清除</button>
@@ -495,30 +494,30 @@
                 <thead>
                     <tr>
                         <th>貼紙退料單算法流程</th>
-                        <th>藍單寫退料數</th>
-                        <th>藍單沒寫退料數</th>
+                        <th>藍單寫退料數量</th>
+                        <th>藍單沒寫退料數量</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>第一種<br>實際退料數量大於應退料數</td>
+                        <td>第一種<br>實際退料數量大於應退料數量</td>
                         <td>
-                            藍單良品：YES(實際退料數-應退料數)<br>
-                            藍單不良品：YES(藍單退料數-藍單良品)
+                            藍單良品：YES(實際退料數量-應退料數量)<br>
+                            藍單不良品：YES(藍單退料數量-藍單良品)
                         </td>
                         <td>
                             
                         </td>
                     </tr>
                     <tr>
-                        <td>第二種<br>實際退料數量小於應退料數</td>
+                        <td>第二種<br>實際退料數量小於應退料數量</td>
                         <td>
                             領料單：YES(應退料數-退料數)<br>
-                            藍單不良：YES(藍單退料數+領料單數)
+                            藍單不良品：YES(藍單退料數+領料單數)
                         </td>
                         <td>
                             領料單：YES(應退料數-退料數)<br>
-                            藍單不良：YES(同領料單數)
+                            藍單不良品：YES(同領料單數)
                         </td>
                     </tr>
                 </tbody>
@@ -872,19 +871,27 @@ function updateResult() {
 
         // 退料計算邏輯
         function calculateRightAuto() {
-            const totalWeight = parseFloat(document.getElementById('totalWeight').value) || 0;
-            const coreWeight = parseFloat(document.getElementById('coreWeight').value) || 0;
-            const originalRolls = parseInt(document.getElementById('originalRolls').value) || 0;
-            const returnWeight = parseFloat(document.getElementById('returnWeight').value) || 0;
-            const manualMode = document.getElementById('manualToggle').checked;
+    const totalWeight = parseFloat(document.getElementById('totalWeight').value) || 0;
+    const coreWeight = parseFloat(document.getElementById('coreWeight').value) || 0;
+    const originalRolls = parseInt(document.getElementById('originalRolls').value) || 0;
+    const returnWeight = parseFloat(document.getElementById('returnWeight').value) || 0;
 
-            if (totalWeight <= coreWeight || originalRolls <= 0 || returnWeight < coreWeight) {
-                document.getElementById('calculatedResult').value = '';
-                if (!manualMode) {
-                    document.getElementById('actualReturn').value = '';
-                }
-                return;
-            }
+    // 防呆（避免亂算）
+    if (totalWeight <= coreWeight || originalRolls <= 0 || returnWeight < coreWeight) {
+        document.getElementById('calculatedResult').value = '';
+        document.getElementById('actualReturn').value = '';
+        return;
+    }
+
+    const val1 = totalWeight - coreWeight;
+    const val2 = originalRolls / val1;
+    const rawResult = (returnWeight - coreWeight) * val2;
+
+    const finalResult = Math.ceil(rawResult);
+
+    document.getElementById('calculatedResult').value = finalResult;
+    document.getElementById('actualReturn').value = finalResult;
+}
 
             const val1 = totalWeight - coreWeight;
             const val2 = originalRolls / val1;
@@ -893,85 +900,70 @@ function updateResult() {
             const finalResult = fractional > 0 ? Math.ceil(rawResult) : rawResult;
 
             document.getElementById('calculatedResult').value = finalResult;
-            if (!manualMode) {
-                document.getElementById('actualReturn').value = finalResult;
-            }
-        }
+            document.getElementById('actualReturn').value = finalResult;
 
-        function toggleManualInput() {
-            const checkbox = document.getElementById('manualToggle');
-            const actualInput = document.getElementById('actualReturn');
-
-            if (checkbox.checked) {
-                actualInput.removeAttribute('readonly');
-                actualInput.classList.remove('readonly');
-            } else {
-                actualInput.setAttribute('readonly', true);
-                actualInput.classList.add('readonly');
-                calculateRightAuto();
-            }
-        }
 
         function calculateLeft() {
-            const prepared = parseInt(document.getElementById('preparedTotal').value) || 0;
-            const workOrder = parseInt(document.getElementById('workOrder').value) || 0;
-            const manualMode = document.getElementById('manualToggle').checked;
-            let actualReturn = parseInt(document.getElementById('actualReturn').value) || 0;
-            const blueReturnInput = parseInt(document.getElementById('blueReturn').value) || 0;
-            const x2Checked = document.getElementById('x2Toggle').checked;
-            const x12Checked = document.getElementById('x12Toggle').checked;
+    const prepared = parseInt(document.getElementById('preparedTotal').value) || 0;
+    const workOrder = parseInt(document.getElementById('workOrder').value) || 0;
 
-            const blueReturn = x2Checked ? blueReturnInput * 2 : blueReturnInput;
+    let actualReturn = parseInt(document.getElementById('actualReturn').value) || 0;
+    const blueReturnInput = parseInt(document.getElementById('blueReturn').value) || 0;
 
-            const blueReturnX12 = x12Checked ? blueReturnInput * 12 : blueReturn;
+    const x2Checked = document.getElementById('x2Toggle').checked;
+    const x12Checked = document.getElementById('x12Toggle').checked;
 
-            const shouldReturn = prepared - workOrder;
-            let goodReturn = 0, badReturn = 0, requirePick = 0, giftReturn = 0;
+    const blueReturn = x2Checked ? blueReturnInput * 2 : blueReturnInput;
+    const blueReturnX12 = x12Checked ? blueReturn * 12 : blueReturn;
 
-            if (actualReturn > shouldReturn) {
-                goodReturn = actualReturn - shouldReturn;
-                if (goodReturn > blueReturnX12) {
-                    giftReturn = goodReturn - blueReturnX12;
-                    goodReturn = blueReturnX12;
-                    badReturn = 0;
-                } else {
-                    badReturn = blueReturnX12 - goodReturn;
-                }
-            } else if (actualReturn < shouldReturn) {
-                requirePick = shouldReturn - actualReturn;
-                badReturn = blueReturnX12 + requirePick;
-            } else {
-                badReturn = blueReturnX12;
-            }
+    const shouldReturn = prepared - workOrder;
 
-            requirePick = Math.max(requirePick, 0);
-            goodReturn = Math.max(goodReturn, 0);
-            badReturn = Math.max(badReturn, 0);
-            giftReturn = Math.max(giftReturn, 0);
+    let goodReturn = 0;
+    let badReturn = 0;
+    let requirePick = 0;
+    let giftReturn = 0;
 
-            const outputLines = [
-                `領料單： ${requirePick}`,
-                `藍單良品： ${goodReturn}`,
-                `藍單不良品： ${badReturn}`
-            ];
+    if (actualReturn > shouldReturn) {
 
-            if (giftReturn > 0) {
-                outputLines.push(`贈品: ${giftReturn}    如果多太多就入進去`);
-            }
+        goodReturn = actualReturn - shouldReturn;
 
-            const leftResultDiv = document.getElementById('leftResult');
-            leftResultDiv.textContent = outputLines.join('\n');
-            leftResultDiv.style.display = 'block';
+        if (goodReturn > blueReturnX12) {
+            giftReturn = goodReturn - blueReturnX12;
+            goodReturn = blueReturnX12;
+            badReturn = 0;
+        } else {
+            badReturn = blueReturnX12 - goodReturn;
         }
 
+    } else if (actualReturn < shouldReturn) {
+
+        requirePick = shouldReturn - actualReturn;
+        badReturn = blueReturnX12 + requirePick;
+
+    } else {
+
+        badReturn = blueReturnX12;
+    }
+
+    const outputLines = [
+        `領料單： ${requirePick}`,
+        `藍單良品： ${goodReturn}`,
+        `藍單不良品： ${badReturn}`
+    ];
+
+    if (giftReturn > 0) {
+        outputLines.push(`贈品： ${giftReturn}`);
+    }
+
+    const leftResultDiv = document.getElementById('leftResult');
+    leftResultDiv.textContent = outputLines.join('\n');
+    leftResultDiv.style.display = 'block';
+}
         function clearAll() {
             const inputs = document.querySelectorAll('input[type=number]');
             inputs.forEach(input => {
                 input.value = '';
             });
-            document.getElementById('manualToggle').checked = false;
-            document.getElementById('actualReturn').setAttribute('readonly', true);
-            document.getElementById('actualReturn').classList.add('readonly');
             document.getElementById('x2Toggle').checked = false;
             document.getElementById('x12Toggle').checked = false;
             document.getElementById('leftResult').style.display = 'none';
