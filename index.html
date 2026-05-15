@@ -605,21 +605,24 @@ perPalletInput.addEventListener('input', updateResult);
 
 function clearFields() {
 
+    // 清輸入
+    document.getElementById('total').value = '';
+    document.getElementById('prep').value = '';
+    document.getElementById('unit').value = '';
+    document.getElementById('layerUnit').value = '';
+    document.getElementById('perPallet').value = '';
+
+    // 清結果
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = '';
+    resultDiv.style.display = 'none';
+
+    // 🔥 重置數值（防殘留）
     totalInput.value = '';
     prepInput.value = '';
     unitInput.value = '';
-    document.getElementById('layerUnit').value = '';
     perPalletInput.value = '';
 
-    const boxCountInput = document.getElementById('boxCount');
-
-    boxCountInput.value = '';
-
-    document.getElementById('boxCountResult').textContent = '0';
-    document.getElementById('boxCountDisplay').style.display = 'none';
-
-    resultDiv.textContent = '';
-    resultDiv.style.display = 'none';
 }
 
 
