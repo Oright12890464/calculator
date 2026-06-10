@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>退料多功能轉換工具</title>
+  <title>Oright工具2.0</title>
   <style>
     body {
       font-family: "Microsoft JhengHei", sans-serif;
@@ -175,7 +175,7 @@
       background-color: #4CAF50;
       color: white;
     }
-    #coreWeightModalClose,
+    #coreWeightModalClose，
     #logicModalClose {
       float: right;
       font-size: 18px;
@@ -256,6 +256,16 @@
     color: white;
 }
 
+    /* 簽名樣式 */
+。footer-credit {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 12px;
+  color: #888;
+  letter-spacing: 1px;
+  user-select: none;
+}
+
   </style>
 </head>
 <body>
@@ -263,13 +273,13 @@
 <div class="container">
     <div class="tab-buttons">
         <button onclick="showTab('returnCalculator')" class="active">退料</button>
-        <button onclick="showTab('prepCalculator')">數量</button>
+        <button onclick="showTab('prepCalculator')">換算</button>
         <button id="openLogicBtn" onclick="openLogicModal()" style="margin-left: 10px;">邏輯表</button>
     </div>
 
     <!-- 退料換算 -->
     <div id="returnCalculator">
-        <h2>退料</h2>
+        <h2>製令退料專用</h2>
         <label>原始重量：
             <input type="number" id="totalWeight" step="any" min="0" placeholder="請輸入原始重量" oninput="calculateRightAuto()">
         </label>
@@ -365,7 +375,7 @@
 
 <!-- 數量換算 -->
 <div id="prepCalculator" style="display:none;">
-    <h2>收貨/備料/回算多功能轉換</h2>
+    <h2>收/備/盤/多功能轉換</h2>
 
     <label for="total">數量：</label>
     <input type="number" id="total" min="1" placeholder="請輸入總數量" oninput="updateResult()" />
@@ -725,39 +735,15 @@ function updateResult() {
 
     // 有板
     else if (perPallet !== null && unit === null && prep === null) {
-
-    const c = convert(total);
-
-    const remainAfterPallet =
-        total % perPallet;
-
-    result =
-        `庫存數量：${formatResult(c.pallets, 0, c.units)} (${total})` +
-        `<br>整板後餘量：${remainAfterPallet}`;
+        const c = convert(total);
+        result = `庫存數量：${formatResult(c.pallets, 0, c.units)} (${total})`;
     }
 
     // 板 + 箱（無備料）
-	else if (unit !== null && perPallet !== null && prep === null) {
-
-    const c = convert(total);
-
-    const remainAfterPallet =
-        total - (c.pallets * perPallet);
-
-    result =
-        `庫存數量：${formatResult(c.pallets, c.boxes, c.units)} (${total})`;
-
-    if (c.pallets > 0) {
-
-        result +=
-            `<br>庫存組成：${perPallet}×${c.pallets}板`;
-
-        if (remainAfterPallet > 0) {
-            result += `  ${remainAfterPallet}×1板`;
-        }
-
+    else if (unit !== null && perPallet !== null && prep === null) {
+        const c = convert(total);
+        result = `庫存數量：${formatResult(c.pallets, c.boxes, c.units)} (${total})`;
     }
-}	
 
     // 備料 + 箱
     else if (prep !== null && unit !== null && perPallet === null) {
@@ -769,8 +755,7 @@ function updateResult() {
 
         if (prep > 0) {
             result =
-                `現況數量：${formatResult(current.pallets, current.boxes, current.units)} (${total})` +
-		`<br>零數板數量:：${total % perPallet}`
+                `現況數量：${formatResult(0, current.boxes, current.units)} (${total})<br>` +
                 `備料數量：${formatResult(0, prepC.boxes, prepC.units)} (${prep})<br>` +
                 `庫存數量：${formatResult(0, stockC.boxes, stockC.units)} (${stock})`;
         } else {
@@ -982,6 +967,10 @@ calcBtns.forEach(btn => {
 
 
     </script>
+
+<div class="footer-credit">
+  資材阿哲製作 😏
+</div>
 
 </body>
 </html>
