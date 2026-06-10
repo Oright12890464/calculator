@@ -251,11 +251,9 @@
     transition: background-color 0.3s, color 0.3s;
 }
 
-.equals {
-    grid-column: span 4;
+.calc-btn:hover {
     background-color: #4CAF50;
     color: white;
-    font-size: 24px;
 }
 
   </style>
@@ -339,21 +337,22 @@
     </span>
 </label>
         </label>
-        <label>貼紙備料總數量：
+        <label>貼紙備料總數：
             <input type="number" id="preparedTotal" class="readonly" readonly>
         </label>
-        <label>工單製令數量：
-            <input type="number" id="workOrder" min="0" placeholder="請輸入工單製令數量">
+        <label>工單製令數：
+            <input type="number" id="workOrder" min="0" placeholder="請輸入工單製令數">
         </label>
         
-        <label>實際退料數量：
-            <input type="number" id="actualReturn" min="0" placeholder="請輸入實際退料數量">
+        <label>實際退料數：
+            <input type="number" id="actualReturn" class="readonly" readonly>
             <span class="checkbox-group">
+                <label class="checkbox-option"><input type="checkbox" id="manualToggle" onclick="toggleManualInput()"> 勾選可自行輸入</label>
             </span>
         </label>
 
-        <label>藍單退料數量：
-            <input type="number" id="blueReturn" min="0" placeholder="請輸入藍單料數量">
+        <label>藍單退料數：
+            <input type="number" id="blueReturn" min="0" placeholder="請輸入藍單料數">
         </label>
 
         <div class="button-group">
@@ -382,7 +381,15 @@
     <input type="number" id="layerUnit" min="1" placeholder="請輸入每層數量" oninput="updateResult()" />
 
     <label for="perPallet">板數：</label>
-    <input type="number" id="perPallet" min="1" placeholder="請輸入每板數量" oninput="updateResult(); updateBoxCountResult();" />
+    <input type="number" id="perPallet" min="1" placeholder="請輸入每板單位" oninput="updateResult(); updateBoxCountResult();" />
+
+    <label for="boxCount">板箱數：</label>
+    <input type="number" id="boxCount" min="1" placeholder="請輸入每板箱數" oninput="updateBoxCountResult()">
+
+    <!-- 滿板數量顯示 -->
+    <div id="boxCountDisplay" style="margin-top: 0.5rem; color: #444; display: none;">
+        滿板數量：<span id="boxCountResult">0</span>
+    </div>
 
     <div class="buttons">
         <button id="clear" onclick="clearFields()" style="width: 100%;">清除</button>
@@ -393,29 +400,24 @@
 <!-- 計算機按鈕 -->
 <div id="calculator">
     <input type="text" id="calcDisplay" readonly />
-<div class="calc-btn-container">
-    <div class="calc-btn">7</div>
-    <div class="calc-btn">8</div>
-    <div class="calc-btn">9</div>
-    <div class="calc-btn">/</div>
-
-    <div class="calc-btn">4</div>
-    <div class="calc-btn">5</div>
-    <div class="calc-btn">6</div>
-    <div class="calc-btn">*</div>
-
-    <div class="calc-btn">1</div>
-    <div class="calc-btn">2</div>
-    <div class="calc-btn">3</div>
-    <div class="calc-btn">-</div>
-
-    <div class="calc-btn">C</div>
-    <div class="calc-btn">0</div>
-    <div class="calc-btn">.</div>
-    <div class="calc-btn">+</div>
-
-    <div class="calc-btn equals">=</div>
-</div>
+    <div class="calc-btn-container">
+        <div class="calc-btn">7</div>
+        <div class="calc-btn">8</div>
+        <div class="calc-btn">9</div>
+        <div class="calc-btn">/</div>
+        <div class="calc-btn">4</div>
+        <div class="calc-btn">5</div>
+        <div class="calc-btn">6</div>
+        <div class="calc-btn">*</div>
+        <div class="calc-btn">1</div>
+        <div class="calc-btn">2</div>
+        <div class="calc-btn">3</div>
+        <div class="calc-btn">-</div>
+        <div class="calc-btn">C</div>
+        <div class="calc-btn">0</div>
+        <div class="calc-btn">=</div>
+        <div class="calc-btn">+</div>
+    </div>
 </div>
 
 
@@ -494,30 +496,30 @@
                 <thead>
                     <tr>
                         <th>貼紙退料單算法流程</th>
-                        <th>藍單寫退料數量</th>
-                        <th>藍單沒寫退料數量</th>
+                        <th>藍單寫退料數</th>
+                        <th>藍單沒寫退料數</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>第一種<br>實際退料數量大於應退料數量</td>
+                        <td>第一種<br>實際退料數量大於應退料數</td>
                         <td>
-                            藍單良品：YES(實際退料數量-應退料數量)<br>
-                            藍單不良品：YES(藍單退料數量-藍單良品)
+                            藍單良品:YES(實際退料數-應退料數)<br>
+                            藍單不良品:YES(藍單退料數-藍單良品)
                         </td>
                         <td>
                             
                         </td>
                     </tr>
                     <tr>
-                        <td>第二種<br>實際退料數量小於應退料數量</td>
+                        <td>第二種<br>實際退料數量小於應退料數</td>
                         <td>
-                            領料單：YES(應退料數-退料數)<br>
-                            藍單不良品：YES(藍單退料數+領料單數)
+                            領料單:YES(應退料數-退料數)<br>
+                            藍單不良:YES(藍單退料數+領料單數)
                         </td>
                         <td>
-                            領料單：YES(應退料數-退料數)<br>
-                            藍單不良品：YES(同領料單數)
+                            領料單:YES(應退料數-退料數)<br>
+                            藍單不良:YES(同領料單數)
                         </td>
                     </tr>
                 </tbody>
@@ -590,166 +592,111 @@
         // 初始顯示介面
         showTab('returnCalculator');
 
+        // 數量換算邏輯
+        const totalInput = document.getElementById('total');
+        const prepInput = document.getElementById('prep');
+        const unitInput = document.getElementById('unit');
+        const perPalletInput = document.getElementById('perPallet');
+        const resultDiv = document.getElementById('result');
 
-// 數量換算邏輯
-const totalInput = document.getElementById('total');
-const prepInput = document.getElementById('prep');
-const unitInput = document.getElementById('unit');
-const perPalletInput = document.getElementById('perPallet');
-const resultDiv = document.getElementById('result');
+        totalInput.addEventListener('input', updateResult);
+        prepInput.addEventListener('input', updateResult);
+        unitInput.addEventListener('input', updateResult);
+        perPalletInput.addEventListener('input', updateResult);
 
-totalInput.addEventListener('input', updateResult);
-prepInput.addEventListener('input', updateResult);
-unitInput.addEventListener('input', updateResult);
-perPalletInput.addEventListener('input', updateResult);
+        function clearFields() {
+            totalInput.value = '';
+            prepInput.value = '';
+            unitInput.value = '';
+            perPalletInput.value = '';
+            const boxCountInput = document.getElementById('boxCount');
+            boxCountInput.value = '';
+            document.getElementById('boxCountResult').textContent = '0';
+            document.getElementById('boxCountDisplay').style.display = 'none';
 
-function clearFields() {
+            resultDiv.textContent = '';
+            resultDiv.style.display = 'none';
+        }
 
-    // 清輸入
-    document.getElementById('total').value = '';
-    document.getElementById('prep').value = '';
-    document.getElementById('unit').value = '';
-    document.getElementById('layerUnit').value = '';
-    document.getElementById('perPallet').value = '';
+        function updateBoxCountResult() {
+            const unit = parseInt(unitInput.value) || 0;
+            const boxCount = parseInt(document.getElementById('boxCount').value) || 0;
+            const result = unit * boxCount;
+            document.getElementById('boxCountResult').textContent = result;
 
-    // 清結果
-    const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = '';
-    resultDiv.style.display = 'none';
+            if (unit > 0 && boxCount > 0) {
+                document.getElementById('boxCountDisplay').style.display = 'block';
+            } else {
+                document.getElementById('boxCountDisplay').style.display = 'none';
+            }
 
-    // 🔥 重置數值（防殘留）
-    totalInput.value = '';
-    prepInput.value = '';
-    unitInput.value = '';
-    perPalletInput.value = '';
-
-}
-
-
-
+            updateResult();
+        }
 function updateResult() {
-
     const total = parseInt(totalInput.value);
-
-    const prep =
-        prepInput.value === ''
-            ? null
-            : parseInt(prepInput.value);
-
-    const unit =
-        unitInput.value === ''
-            ? null
-            : parseInt(unitInput.value);
-
-    const perPallet =
-        perPalletInput.value === ''
-            ? null
-            : parseInt(perPalletInput.value);
-
-    const layerUnit =
-        document.getElementById('layerUnit').value === ''
-            ? null
-            : parseInt(document.getElementById('layerUnit').value);
+    const prep = prepInput.value === '' ? null : parseInt(prepInput.value);
+    const unit = unitInput.value === '' ? null : parseInt(unitInput.value);
+    const perPallet = perPalletInput.value === '' ? null : parseInt(perPalletInput.value);
 
     resultDiv.textContent = '';
 
-    // =========================
-    // 基本檢查
-    // =========================
-
     if (isNaN(total) || total <= 0) {
-
-        resultDiv.textContent =
-            '請輸入有效的數量（總數），且必須大於0';
-
-        resultDiv.style.display = 'block';
-
+        resultDiv.textContent = '請輸入有效的數量（總數），且必須大於0';
         return;
     }
 
     if (prep !== null && prep > total) {
-
-        resultDiv.textContent =
-            '備料數量不能大於總數量';
-
-        resultDiv.style.display = 'block';
-
+        resultDiv.textContent = '備料數量不能大於總數量';
         return;
     }
 
     let result = '';
 
-    // =========================
-    // 統一轉換
-    // =========================
-
+    // ✅ 統一轉換函式
     function convert(totalQty) {
+        let pallets = 0, boxes = 0, units = 0;
 
-        let pallets = 0;
-        let boxes = 0;
-        let layers = 0;
-        let units = 0;
-
-        // 板
-        if (perPallet !== null && perPallet > 0) {
-
+        if (perPallet !== null) {
             pallets = Math.floor(totalQty / perPallet);
-
             totalQty = totalQty % perPallet;
         }
 
-        // 箱
-        if (unit !== null && unit > 0) {
-
+        if (unit !== null) {
             boxes = Math.floor(totalQty / unit);
-
             totalQty = totalQty % unit;
         }
 
-        // 層
-        if (layerUnit !== null && layerUnit > 0) {
-
-            layers = Math.floor(totalQty / layerUnit);
-
-            totalQty = totalQty % layerUnit;
-        }
-
-        // 支
         units = totalQty;
 
-        return {
-            pallets,
-            boxes,
-            layers,
-            units
-        };
+        return { pallets, boxes, units };
     }
 
-    // =========================
-    // 格式化
-    // =========================
+    // ✅ 格式化（🔥已加入「層數」功能）
+    function formatResult(pallets, boxes, units) {
+        let result = '';
 
-    function formatResult(data) {
+        const layerUnit = parseInt(document.getElementById('layerUnit')?.value);
 
-        let text = '';
+        let layers = 0;
+        let remainUnits = units;
 
-        if (data.pallets > 0) {
-            text += `${data.pallets}板 `;
+        // 👉 有填層數才拆 units
+        if (!isNaN(layerUnit) && layerUnit > 0 && units > 0) {
+            layers = Math.floor(units / layerUnit);
+            remainUnits = units % layerUnit;
         }
 
-        if (data.boxes > 0) {
-            text += `${data.boxes}箱 `;
+        if (pallets > 0) result += `${pallets}板 `;
+        if (boxes > 0) result += `${boxes}箱 `;
+
+        if (!isNaN(layerUnit) && layerUnit > 0) {
+            if (layers > 0) result += `${layers}層 `;
+            if (remainUnits > 0) result += `${remainUnits}支`;
+        } else {
+            if (units > 0) result += `${units}支`;
         }
 
-        if (data.layers > 0) {
-            text += `${data.layers}層 `;
-        }
-
-        if (data.units > 0) {
-            text += `${data.units}支`;
-        }
-
-        return text.trim() || '0支';
+        return result.trim() || '0支';
     }
 
     // =========================
@@ -757,89 +704,63 @@ function updateResult() {
     // =========================
 
     // 只有總數
-    if (
-        prep === null &&
-        unit === null &&
-        perPallet === null &&
-        layerUnit === null
-    ) {
-
-        result =
-            `庫存數量：${total}支`;
+    if (prep === null && unit === null && perPallet === null) {
+        result = `庫存數量：${total}支`;
     }
 
-    // 只有層數
-    else if (
-        prep === null &&
-        unit === null &&
-        perPallet === null &&
-        layerUnit !== null
-    ) {
-
-        const c = convert(total);
-
-        result =
-            `庫存數量：${formatResult(c)} (${total})`;
-    }
-
-    // 備料（純數量）
-    else if (
-        prep !== null &&
-        unit === null &&
-        perPallet === null &&
-        layerUnit === null
-    ) {
-
+    // 有備料（純數量）
+    else if (prep !== null && unit === null && perPallet === null) {
         const stock = total - prep;
-
         result =
             `現況數量：${total}支<br>` +
             `備料數量：${prep}支<br>` +
             `庫存數量：${stock}支`;
     }
 
-    // 有箱
-    else if (
-        unit !== null &&
-        perPallet === null &&
-        prep === null
-    ) {
-
+    // 有單位（箱）
+    else if (unit !== null && perPallet === null && prep === null) {
         const c = convert(total);
-
-        result =
-            `庫存數量：${formatResult(c)} (${total})`;
+        result = `庫存數量：${formatResult(0, c.boxes, c.units)} (${total})`;
     }
 
     // 有板
-    else if (
-        perPallet !== null &&
-        unit === null &&
-        prep === null
-    ) {
+    else if (perPallet !== null && unit === null && prep === null) {
 
-        const c = convert(total);
+    const c = convert(total);
 
-        result =
-            `庫存數量：${formatResult(c)} (${total})`;
+    const remainAfterPallet =
+        total % perPallet;
+
+    result =
+        `庫存數量：${formatResult(c.pallets, 0, c.units)} (${total})` +
+        `<br>整板後餘量：${remainAfterPallet}`;
     }
 
-    // 板 + 箱
-    else if (
-        unit !== null &&
-        perPallet !== null &&
-        prep === null
-    ) {
+    // 板 + 箱（無備料）
+	else if (unit !== null && perPallet !== null && prep === null) {
 
-        const c = convert(total);
+    const c = convert(total);
 
-        result =
-            `庫存數量：${formatResult(c)} (${total})`;
+    const remainAfterPallet =
+        total - (c.pallets * perPallet);
+
+    result =
+        `庫存數量：${formatResult(c.pallets, c.boxes, c.units)} (${total})`;
+
+    if (c.pallets > 0) {
+
+        result +=
+            `<br>庫存組成：${perPallet}×${c.pallets}板`;
+
+        if (remainAfterPallet > 0) {
+            result += `  ${remainAfterPallet}×1板`;
+        }
+
     }
+}	
 
-    // 有備料（全部模式）
-    else if (prep !== null) {
-
+    // 備料 + 箱
+    else if (prep !== null && unit !== null && perPallet === null) {
         const stock = total - prep;
 
         const current = convert(total);
@@ -847,23 +768,56 @@ function updateResult() {
         const stockC = convert(stock);
 
         if (prep > 0) {
-
             result =
-                `現況數量：${formatResult(current)} (${total})<br>` +
-                `備料數量：${formatResult(prepC)} (${prep})<br>` +
-                `庫存數量：${formatResult(stockC)} (${stock})`;
-
+                `現況數量：${formatResult(current.pallets, current.boxes, current.units)} (${total})` +
+		`<br>零數板數量:：${total % perPallet}`
+                `備料數量：${formatResult(0, prepC.boxes, prepC.units)} (${prep})<br>` +
+                `庫存數量：${formatResult(0, stockC.boxes, stockC.units)} (${stock})`;
         } else {
+            result = `庫存數量：${formatResult(0, stockC.boxes, stockC.units)} (${stock})`;
+        }
+    }
 
+    // 備料 + 板
+    else if (prep !== null && perPallet !== null && unit === null) {
+        const stock = total - prep;
+
+        const current = convert(total);
+        const prepC = convert(prep);
+        const stockC = convert(stock);
+
+        if (prep > 0) {
             result =
-                `庫存數量：${formatResult(stockC)} (${stock})`;
+                `現況數量：${formatResult(current.pallets, 0, current.units)} (${total})<br>` +
+                `備料數量：${formatResult(prepC.pallets, 0, prepC.units)} (${prep})<br>` +
+                `庫存數量：${formatResult(stockC.pallets, 0, stockC.units)} (${stock})`;
+        } else {
+            result = `庫存數量：${formatResult(stockC.pallets, 0, stockC.units)} (${stock})`;
+        }
+    }
+
+    // ✅ 全部都有
+    else if (prep !== null && unit !== null && perPallet !== null) {
+        const stock = total - prep;
+
+        const current = convert(total);
+        const prepC = convert(prep);
+        const stockC = convert(stock);
+
+        if (prep > 0) {
+            result =
+                `現況數量：${formatResult(current.pallets, current.boxes, current.units)} (${total})<br>` +
+                `備料數量：${formatResult(prepC.pallets, prepC.boxes, prepC.units)} (${prep})<br>` +
+                `庫存數量：${formatResult(stockC.pallets, stockC.boxes, stockC.units)} (${stock})`;
+        } else {
+            result =
+                `庫存數量：${formatResult(stockC.pallets, stockC.boxes, stockC.units)} (${stock})`;
         }
     }
 
     resultDiv.innerHTML = result;
     resultDiv.style.display = 'block';
 }
-
 
         function updatePreparedTotal() {
             const p1 = parseInt(document.getElementById('prepared1').value) || 0;
@@ -874,27 +828,19 @@ function updateResult() {
 
         // 退料計算邏輯
         function calculateRightAuto() {
-    const totalWeight = parseFloat(document.getElementById('totalWeight').value) || 0;
-    const coreWeight = parseFloat(document.getElementById('coreWeight').value) || 0;
-    const originalRolls = parseInt(document.getElementById('originalRolls').value) || 0;
-    const returnWeight = parseFloat(document.getElementById('returnWeight').value) || 0;
+            const totalWeight = parseFloat(document.getElementById('totalWeight').value) || 0;
+            const coreWeight = parseFloat(document.getElementById('coreWeight').value) || 0;
+            const originalRolls = parseInt(document.getElementById('originalRolls').value) || 0;
+            const returnWeight = parseFloat(document.getElementById('returnWeight').value) || 0;
+            const manualMode = document.getElementById('manualToggle').checked;
 
-    // 防呆（避免亂算）
-    if (totalWeight <= coreWeight || originalRolls <= 0 || returnWeight < coreWeight) {
-        document.getElementById('calculatedResult').value = '';
-        document.getElementById('actualReturn').value = '';
-        return;
-    }
-
-    const val1 = totalWeight - coreWeight;
-    const val2 = originalRolls / val1;
-    const rawResult = (returnWeight - coreWeight) * val2;
-
-    const finalResult = Math.ceil(rawResult);
-
-    document.getElementById('calculatedResult').value = finalResult;
-    document.getElementById('actualReturn').value = finalResult;
-}
+            if (totalWeight <= coreWeight || originalRolls <= 0 || returnWeight < coreWeight) {
+                document.getElementById('calculatedResult').value = '';
+                if (!manualMode) {
+                    document.getElementById('actualReturn').value = '';
+                }
+                return;
+            }
 
             const val1 = totalWeight - coreWeight;
             const val2 = originalRolls / val1;
@@ -903,70 +849,85 @@ function updateResult() {
             const finalResult = fractional > 0 ? Math.ceil(rawResult) : rawResult;
 
             document.getElementById('calculatedResult').value = finalResult;
-            document.getElementById('actualReturn').value = finalResult;
-
-
-        function calculateLeft() {
-    const prepared = parseInt(document.getElementById('preparedTotal').value) || 0;
-    const workOrder = parseInt(document.getElementById('workOrder').value) || 0;
-
-    let actualReturn = parseInt(document.getElementById('actualReturn').value) || 0;
-    const blueReturnInput = parseInt(document.getElementById('blueReturn').value) || 0;
-
-    const x2Checked = document.getElementById('x2Toggle').checked;
-    const x12Checked = document.getElementById('x12Toggle').checked;
-
-    const blueReturn = x2Checked ? blueReturnInput * 2 : blueReturnInput;
-    const blueReturnX12 = x12Checked ? blueReturn * 12 : blueReturn;
-
-    const shouldReturn = prepared - workOrder;
-
-    let goodReturn = 0;
-    let badReturn = 0;
-    let requirePick = 0;
-    let giftReturn = 0;
-
-    if (actualReturn > shouldReturn) {
-
-        goodReturn = actualReturn - shouldReturn;
-
-        if (goodReturn > blueReturnX12) {
-            giftReturn = goodReturn - blueReturnX12;
-            goodReturn = blueReturnX12;
-            badReturn = 0;
-        } else {
-            badReturn = blueReturnX12 - goodReturn;
+            if (!manualMode) {
+                document.getElementById('actualReturn').value = finalResult;
+            }
         }
 
-    } else if (actualReturn < shouldReturn) {
+        function toggleManualInput() {
+            const checkbox = document.getElementById('manualToggle');
+            const actualInput = document.getElementById('actualReturn');
 
-        requirePick = shouldReturn - actualReturn;
-        badReturn = blueReturnX12 + requirePick;
+            if (checkbox.checked) {
+                actualInput.removeAttribute('readonly');
+                actualInput.classList.remove('readonly');
+            } else {
+                actualInput.setAttribute('readonly', true);
+                actualInput.classList.add('readonly');
+                calculateRightAuto();
+            }
+        }
 
-    } else {
+        function calculateLeft() {
+            const prepared = parseInt(document.getElementById('preparedTotal').value) || 0;
+            const workOrder = parseInt(document.getElementById('workOrder').value) || 0;
+            const manualMode = document.getElementById('manualToggle').checked;
+            let actualReturn = parseInt(document.getElementById('actualReturn').value) || 0;
+            const blueReturnInput = parseInt(document.getElementById('blueReturn').value) || 0;
+            const x2Checked = document.getElementById('x2Toggle').checked;
+            const x12Checked = document.getElementById('x12Toggle').checked;
 
-        badReturn = blueReturnX12;
-    }
+            const blueReturn = x2Checked ? blueReturnInput * 2 : blueReturnInput;
 
-    const outputLines = [
-        `領料單： ${requirePick}`,
-        `藍單良品： ${goodReturn}`,
-        `藍單不良品： ${badReturn}`
-    ];
+            const blueReturnX12 = x12Checked ? blueReturnInput * 12 : blueReturn;
 
-    if (giftReturn > 0) {
-        outputLines.push(`贈品： ${giftReturn}`);
-    }
+            const shouldReturn = prepared - workOrder;
+            let goodReturn = 0, badReturn = 0, requirePick = 0, giftReturn = 0;
 
-    const leftResultDiv = document.getElementById('leftResult');
-    leftResultDiv.textContent = outputLines.join('\n');
-    leftResultDiv.style.display = 'block';
-}
+            if (actualReturn > shouldReturn) {
+                goodReturn = actualReturn - shouldReturn;
+                if (goodReturn > blueReturnX12) {
+                    giftReturn = goodReturn - blueReturnX12;
+                    goodReturn = blueReturnX12;
+                    badReturn = 0;
+                } else {
+                    badReturn = blueReturnX12 - goodReturn;
+                }
+            } else if (actualReturn < shouldReturn) {
+                requirePick = shouldReturn - actualReturn;
+                badReturn = blueReturnX12 + requirePick;
+            } else {
+                badReturn = blueReturnX12;
+            }
+
+            requirePick = Math.max(requirePick, 0);
+            goodReturn = Math.max(goodReturn, 0);
+            badReturn = Math.max(badReturn, 0);
+            giftReturn = Math.max(giftReturn, 0);
+
+            const outputLines = [
+                `領料單: ${requirePick}`,
+                `藍單良品: ${goodReturn}`,
+                `藍單不良品: ${badReturn}`
+            ];
+
+            if (giftReturn > 0) {
+                outputLines.push(`贈品: ${giftReturn}    如果多太多就入進去`);
+            }
+
+            const leftResultDiv = document.getElementById('leftResult');
+            leftResultDiv.textContent = outputLines.join('\n');
+            leftResultDiv.style.display = 'block';
+        }
+
         function clearAll() {
             const inputs = document.querySelectorAll('input[type=number]');
             inputs.forEach(input => {
                 input.value = '';
             });
+            document.getElementById('manualToggle').checked = false;
+            document.getElementById('actualReturn').setAttribute('readonly', true);
+            document.getElementById('actualReturn').classList.add('readonly');
             document.getElementById('x2Toggle').checked = false;
             document.getElementById('x12Toggle').checked = false;
             document.getElementById('leftResult').style.display = 'none';
