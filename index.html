@@ -753,11 +753,27 @@ function updateResult() {
     }
 
     // 板 + 箱（無備料）
-    else if (unit !== null && perPallet !== null && prep === null) {
-        const c = convert(total);
-        result = `庫存數量：${formatResult(c.pallets, c.boxes, c.units)} (${total})`;
-    }
+else if (unit !== null && perPallet !== null && prep === null) {
 
+    const c = convert(total);
+
+    const remainAfterPallet =
+        total - (c.pallets * perPallet);
+
+    result =
+        `庫存數量：${formatResult(c.pallets, c.boxes, c.units)} (${total})`;
+
+    if (c.pallets > 0) {
+
+        result +=
+            `<br>庫存組成：${perPallet}×${c.pallets}板`;
+
+        if (remainAfterPallet > 0) {
+            result += `  ${remainAfterPallet}×1板`;
+        }
+
+    }
+}
     // 備料 + 箱
     else if (prep !== null && unit !== null && perPallet === null) {
         const stock = total - prep;
@@ -982,7 +998,7 @@ calcBtns.forEach(btn => {
     </script>
 
 <div class="footer-credit">
-  資材倉儲課阿哲製作 😏
+  資材倉儲課阿哲製作
 </div>
 
 </body>
