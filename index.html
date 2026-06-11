@@ -14,7 +14,7 @@
       align-items: flex-start;
       min-height: 100vh;
     }
-    。container {
+    .container {
       width: 100%;
       max-width: 400px;
       background: white;
@@ -29,7 +29,7 @@
       margin-bottom: 1.5rem;
       color: #222;
     }
-    。tab-buttons {
+    .tab-buttons {
       display: flex;
       justify-content: space-between;
       margin-bottom: 20px;
@@ -397,23 +397,13 @@
     <input type="number" id="prep" min="0" placeholder="請輸入備料數量" oninput="updateResult()" />
 
     <label for="unit">單位：</label>
-    <input type="number" id="unit" min="1" placeholder="請輸入每箱單位" oninput="updateResult(); updateBoxCountResult();" />
-
+    <input type="number" id="unit" min="1" placeholder="請輸入每箱單位" oninput="updateResult()" />
     <!-- ✅ 新增：層數 -->
     <label for="layerUnit">層數：</label>
     <input type="number" id="layerUnit" min="1" placeholder="請輸入每層數量" oninput="updateResult()" />
 
     <label for="perPallet">板數：</label>
-    <input type="number" id="perPallet" min="1" placeholder="請輸入每板單位" oninput="updateResult(); updateBoxCountResult();" />
-
-    <label for="boxCount">板箱數：</label>
-    <input type="number" id="boxCount" min="1" placeholder="請輸入每板箱數" oninput="updateBoxCountResult()">
-
-    <!-- 滿板數量顯示 -->
-    <div id="boxCountDisplay" style="margin-top: 0.5rem; color: #444; display: none;">
-        滿板數量：<span id="boxCountResult">0</span>
-    </div>
-
+    <input type="number" id="perPallet" min="1" placeholder="請輸入每板單位" oninput="updateResult()" />
     <div class="buttons">
         <button id="clear" onclick="clearFields()" style="width: 100%;">清除</button>
         <div id="result" class="result" style="display:none;"></div>
@@ -632,29 +622,11 @@
             prepInput.value = '';
             unitInput.value = '';
             perPalletInput.value = '';
-            const boxCountInput = document.getElementById('boxCount');
-            boxCountInput.value = '';
-            document.getElementById('boxCountResult').textContent = '0';
-            document.getElementById('boxCountDisplay').style.display = 'none';
-
             resultDiv.textContent = '';
             resultDiv.style.display = 'none';
         }
 
-        function updateBoxCountResult() {
-            const unit = parseInt(unitInput.value) || 0;
-            const boxCount = parseInt(document.getElementById('boxCount').value) || 0;
-            const result = unit * boxCount;
-            document.getElementById('boxCountResult').textContent = result;
 
-            if (unit > 0 && boxCount > 0) {
-                document.getElementById('boxCountDisplay').style.display = 'block';
-            } else {
-                document.getElementById('boxCountDisplay').style.display = 'none';
-            }
-
-            updateResult();
-        }
 function updateResult() {
     const total = parseInt(totalInput.value);
     const prep = prepInput.value === '' ? null : parseInt(prepInput.value);
