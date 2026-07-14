@@ -409,7 +409,7 @@
         <label>退料重量：
             <input type="number" id="returnWeight" step="any" min="0" placeholder="請輸入實際退料重量" oninput="calculateRightAuto()">
         </label>
-        <label>換算貼紙張數：
+        <label>貼紙退料數：
             <input type="number" id="calculatedResult" class="readonly" readonly>
         </label>
 	<div class="split-line"></div>
@@ -447,7 +447,7 @@
             <input type="number" id="workOrder" min="0" placeholder="請輸入工單製令數">
         </label>
         
-        <label>實際退料數：
+        <label>貼紙退料數：
             <input type="number" id="actualReturn" class="readonly" readonly>
             <span class="checkbox-group">
                 <label class="checkbox-option"><input type="checkbox" id="manualToggle" onclick="toggleManualInput()"> 勾選可自行輸入</label>
@@ -1078,15 +1078,6 @@ calcBtns.forEach(btn => {
           軸心表
         </button>
 
-        <label>原始捲數：
-            <input type="number" id="originalRolls" min="0" placeholder="請輸入原始單捲數量" oninput="calculateRightAuto()">
-        </label>
-        <label>退料重量：
-            <input type="number" id="returnWeight" step="any" min="0" placeholder="請輸入實際退料重量" oninput="calculateRightAuto()">
-        </label>
-        <label>實際貼紙退料數：
-            <input type="number" id="calculatedResult" class="readonly" readonly>
-        </label>
 
 	<!-- 分隔線 -->
 <div class="split-line"></div>
