@@ -320,6 +320,38 @@
       transform: scale(1.05);
     }
 
+	/* 分隔線 */
+.split-line {
+
+  width: 100%;
+
+  height: 1px;
+
+  background: #ccc;
+
+  margin: 18px 0;
+
+}
+
+/* 區塊標題 */
+.section-title {
+
+  margin-top: 20px;
+
+  padding: 10px;
+
+  color: #444;
+
+  border-radius: 8px;
+
+  text-align: center;
+
+  font-weight: bold;
+
+  font-size: 18px;
+
+}
+
   </style>
 </head>
 <body>
@@ -333,7 +365,9 @@
 
     <!-- 退料換算 -->
     <div id="returnCalculator">
-        <h2>製令退料專用</h2>
+	<div class="section-title">
+  	貼紙退料秤重換算
+	</div>
         <label>原始重量：
             <input type="number" id="totalWeight" step="any" min="0" placeholder="請輸入原始重量" oninput="calculateRightAuto()">
         </label>
@@ -378,6 +412,11 @@
         <label>換算貼紙張數：
             <input type="number" id="calculatedResult" class="readonly" readonly>
         </label>
+	<div class="split-line"></div>
+
+	<div class="section-title">
+  	藍單製令填寫
+	</div>
         <label>貼紙備料數：
     <div style="display:flex; gap:8px; margin-top:4px; width:100%;">
         <input type="number" id="prepared1" min="0" placeholder="批號1"
@@ -429,8 +468,9 @@
 
 <!-- 數量換算 -->
 <div id="prepCalculator" style="display:none;">
-    <h2>收/備/盤/多功能轉換</h2>
-
+	<div class="section-title">
+  	收貨/備料/回算/數量轉換
+	</div>
     <label for="total">數量：</label>
     <input type="number" id="total" min="1" placeholder="請輸入總數量" oninput="updateResult()" />
 
@@ -987,6 +1027,9 @@ calcBtns.forEach(btn => {
     });
 });
 
+
+
+
   </style>
 </head>
 <body>
@@ -1000,7 +1043,6 @@ calcBtns.forEach(btn => {
 
     <!-- 退料換算 -->
     <div id="returnCalculator">
-        <h2>製令退料專用</h2>
         <label>原始重量：
             <input type="number" id="totalWeight" step="any" min="0" placeholder="請輸入原始重量" oninput="calculateRightAuto()">
         </label>
@@ -1042,9 +1084,13 @@ calcBtns.forEach(btn => {
         <label>退料重量：
             <input type="number" id="returnWeight" step="any" min="0" placeholder="請輸入實際退料重量" oninput="calculateRightAuto()">
         </label>
-        <label>換算貼紙張數：
+        <label>實際貼紙退料數：
             <input type="number" id="calculatedResult" class="readonly" readonly>
         </label>
+
+	<!-- 分隔線 -->
+<div class="split-line"></div>
+
         <label>貼紙備料數：
     <div style="display:flex; gap:8px; margin-top:4px; width:100%;">
         <input type="number" id="prepared1" min="0" placeholder="批號1"
@@ -1075,7 +1121,7 @@ calcBtns.forEach(btn => {
             <input type="number" id="workOrder" min="0" placeholder="請輸入工單製令數">
         </label>
         
-        <label>實際退料數：
+        <label>實際貼紙退料數：
             <input type="number" id="actualReturn" class="readonly" readonly>
             <span class="checkbox-group">
                 <label class="checkbox-option"><input type="checkbox" id="manualToggle" onclick="toggleManualInput()"> 勾選可自行輸入</label>
@@ -1094,52 +1140,6 @@ calcBtns.forEach(btn => {
         <div class="result" id="leftResult" style="display:none;"></div>
     </div>
 
-<!-- 數量換算 -->
-<div id="prepCalculator" style="display:none;">
-    <h2>收/備/盤/多功能轉換</h2>
-
-    <label for="total">數量：</label>
-    <input type="number" id="total" min="1" placeholder="請輸入總數量" oninput="updateResult()" />
-
-    <label for="prep">備料數量：</label>
-    <input type="number" id="prep" min="0" placeholder="請輸入備料數量" oninput="updateResult()" />
-
-    <label for="unit">單位：</label>
-    <input type="number" id="unit" min="1" placeholder="請輸入每箱單位" oninput="updateResult()" />
-    <!-- ✅ 新增：層數 -->
-    <label for="layerUnit">層數：</label>
-    <input type="number" id="layerUnit" min="1" placeholder="請輸入每層數量" oninput="updateResult()" />
-
-    <label for="perPallet">板數：</label>
-    <input type="number" id="perPallet" min="1" placeholder="請輸入每板單位" oninput="updateResult()" />
-    <div class="buttons">
-        <button id="clear" onclick="clearFields()" style="width: 100%;">清除</button>
-        <div id="result" class="result" style="display:none;"></div>
-    </div>
-</div>
-
-<!-- 計算機按鈕 -->
-<div id="calculator">
-    <input type="text" id="calcDisplay" readonly />
-    <div class="calc-btn-container">
-        <div class="calc-btn">7</div>
-        <div class="calc-btn">8</div>
-        <div class="calc-btn">9</div>
-        <div class="calc-btn">/</div>
-        <div class="calc-btn">4</div>
-        <div class="calc-btn">5</div>
-        <div class="calc-btn">6</div>
-        <div class="calc-btn">*</div>
-        <div class="calc-btn">1</div>
-        <div class="calc-btn">2</div>
-        <div class="calc-btn">3</div>
-        <div class="calc-btn">-</div>
-        <div class="calc-btn">C</div>
-        <div class="calc-btn">0</div>
-        <div class="calc-btn">=</div>
-        <div class="calc-btn">+</div>
-    </div>
-</div>
 
 
     <!-- 軸心重量參考表彈窗 -->
