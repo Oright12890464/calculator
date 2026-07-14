@@ -371,38 +371,9 @@
         <label>原始重量：
             <input type="number" id="totalWeight" step="any" min="0" placeholder="請輸入原始重量" oninput="calculateRightAuto()">
         </label>
-        <label style="display: block; margin-top: 1rem; font-weight: 600; color: #444;">
-          軸心重量：
-        </label>
-        <input
-          type="number"
-          id="coreWeight"
-          step="any"
-          min="0"
-          placeholder="請輸入軸心重量"
-          oninput="calculateRightAuto()"
-          style="width: 100%; max-width: 200px; margin-top: 4px;"
-        />
-        <button
-          type="button"
-          id="openCoreWeightBtn"
-          onclick="openCoreWeightModal()"
-          style="
-            margin-top: 8px;
-            font-weight: 600;
-            color: #4CAF50;
-            border: 1px solid #4CAF50;
-            border-radius: 4px;
-            background: white;
-            padding: 6px 10px !important;   /* 縮小左右內距 */
-            cursor: pointer;
-            min-width: 0 !important;        /* 取消最小寬度 */
-            width: auto;                    /* 讓寬度自適應文字 */
-          "
-        >
-          軸心表
-        </button>
-
+        <label>軸心重量：
+            <input type="number" id="coreWeight" step="any" min="0" placeholder="請輸入軸心重量" oninput="calculateRightAuto()">
+	</label>
         <label>原始捲數：
             <input type="number" id="originalRolls" min="0" placeholder="請輸入原始單捲數量" oninput="calculateRightAuto()">
         </label>
@@ -471,7 +442,7 @@
 	<div class="section-title">
   	收貨/備料/回算/數量轉換
 	</div>
-    <label for="total">數量：</label>
+    <label for="total">總數量：</label>
     <input type="number" id="total" min="1" placeholder="請輸入總數量" oninput="updateResult()" />
 
     <label for="prep">備料數量：</label>
@@ -481,7 +452,7 @@
     <input type="number" id="unit" min="1" placeholder="請輸入每箱單位" oninput="updateResult()" />
     <!-- ✅ 新增：層數 -->
     <label for="layerUnit">層數：</label>
-    <input type="number" id="layerUnit" min="1" placeholder="請輸入每層數量" oninput="updateResult()" />
+    <input type="number" id="layerUnit" min="1" placeholder="請輸入每箱ㄧ層數量" oninput="updateResult()" />
 
     <label for="perPallet">板數：</label>
     <input type="number" id="perPallet" min="1" placeholder="請輸入每板單位" oninput="updateResult()" />
@@ -515,51 +486,6 @@
 </div>
 
 
-    <!-- 軸心重量參考表彈窗 -->
-    <div id="coreWeightModal" style="display:none; position:fixed; z-index:9999; left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.4); overflow:auto;">
-      <div id="coreWeightModalContent" style="background:#fff; margin:8% auto; padding:20px; border-radius:8px; max-width:600px; box-shadow:0 4px 10px rgba(0,0,0,0.3);">
-        <span id="coreWeightModalClose" onclick="closeCoreWeightModal()" style="float:right; font-size:22px; font-weight:bold; cursor:pointer;">&times;</span>
-        <h3>軸心重量參考表</h3>
-        <table style="width:100%; border-collapse:collapse; margin-top:10px;">
-          <thead>
-            <tr style="background:#4CAF50; color:#fff;">
-              <th style="padding:8px; border:1px solid #ddd;">重量</th>
-              <th style="padding:8px; border:1px solid #ddd;">適用產品</th>
-            </tr>
-          </thead>
-          <tbody>     
-            <tr>
-                <td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.035g</td>
-		<td style="padding:8px; border:1px solid #ddd;">護髮油100ml系列（明頡）</td>
-		</tr>
-		<tr>
-		<td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.28g</td>
-		<td style="padding:8px; border:1px solid #ddd;">鋁箔包1ml系列（錫安）</td>
-		</tr>
-		<tr>
-		<td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.42g</td>
-		<td style="padding:8px; border:1px solid #ddd;">鋁箔包_Salon Use共用護髮包70ml（錫安）</td>
-            </tr>
-          </tbody>
-        </table>
-        <p style="font-size:12px; color:#666; margin-top:10px;">點擊「單位」欄的數值可直接帶入軸心重量欄</p>
-      </div>
-    </div>
-
-    <style>
-        .logic-table th {
-            background-color: #4CAF50;
-            color: white;
-            text-align: center; /* 標題置中 */
-        }
-        .logic-table td {
-            text-align: left; /* 內容靠左 */
-            vertical-align: top; /* 讓內容在單元格內部靠上 */
-        }
-        #logicModalContent {
-            text-align: left; /* 整個彈窗內容靠左 */
-        }
-    </style>
 
     <!-- 退料邏輯彈窗 -->
     <div id="logicModal" style="display:none; position:fixed; z-index:9999; left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.4); overflow:auto;">
