@@ -664,6 +664,7 @@ unitInput.value = '';
 perPalletInput.value = '';
 resultDiv.textContent = '';
 resultDiv.style.display = 'none';
+lastStockQty = null;
 }
 
 function nextOrder() {
@@ -984,6 +985,7 @@ document.getElementById('actualReturn').classList.add('readonly');
 document.getElementById('x2Toggle').checked = false;
 document.getElementById('x12Toggle').checked = false;
 document.getElementById('leftResult').style.display = 'none';
+lastStockQty = null;
 }
 
 
