@@ -577,6 +577,75 @@ const prepInput = document.getElementById('prep');
 const unitInput = document.getElementById('unit');
 const perPalletInput = document.getElementById('perPallet');
 const resultDiv = document.getElementById('result');
+const layerInput = document.getElementById('layerUnit');
+
+const inputOrder = [
+    totalInput,
+    prepInput,
+    unitInput,
+    layerInput,
+    perPalletInput
+];
+
+inputOrder.forEach((input, index) => {
+
+    input.addEventListener("keydown", function(e) {
+
+        if (e.key === "Enter") {
+
+            e.preventDefault();
+
+            if (index < inputOrder.length - 1) {
+                inputOrder[index + 1].focus();
+            } else {
+                updateResult();
+            }
+
+        }
+
+    });
+
+});
+
+const returnInputOrder = [
+    document.getElementById("totalWeight"),
+    document.getElementById("coreWeight"),
+    document.getElementById("originalRolls"),
+    document.getElementById("returnWeight"),
+    document.getElementById("prepared1"),
+    document.getElementById("prepared2"),
+    document.getElementById("prepared3"),
+    document.getElementById("workOrder"),
+    document.getElementById("actualReturn"),
+    document.getElementById("blueReturn")
+];
+
+returnInputOrder.forEach((input, index) => {
+
+    input.addEventListener("keydown", function(e) {
+
+        if (e.key !== "Enter") return;
+
+        e.preventDefault();
+
+        // actualReturn 沒勾手動時直接跳過
+        if (
+            input.id === "workOrder" &&
+            !document.getElementById("manualToggle").checked
+        ) {
+            document.getElementById("blueReturn").focus();
+            return;
+        }
+
+        if (index < returnInputOrder.length - 1) {
+            returnInputOrder[index + 1].focus();
+        } else {
+            calculateLeft();
+        }
+
+    });
+
+});
 let lastStockQty = null;
 
 [
@@ -613,6 +682,11 @@ function nextOrder() {
     // 清空結果
     resultDiv.innerHTML = "";
     resultDiv.style.display = "none";
+
+    // 自動跳到備料欄位
+    
+    prepInput.focus();
+
 
 }
 
