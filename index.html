@@ -538,15 +538,28 @@ function closeLogicModal() {
 <script>
 // 切換標籤顯示
 function showTab(tabId) {
+
 const tabs = ['prepCalculator', 'returnCalculator'];
+
 tabs.forEach(id => {
-document.getElementById(id).style.display = (id === tabId) ? 'block' : 'none';
+document.getElementById(id).style.display =
+(id === tabId) ? 'block' : 'none';
 });
 
-const tabName = tabId === 'prepCalculator' ? '數量' : '退料';
 document.querySelectorAll('.tab-buttons button').forEach(btn => {
-btn.classList.toggle('active', btn.textContent.includes(tabName));
+btn.classList.remove('active');
 });
+
+if (tabId === 'returnCalculator') {
+document.querySelector('button[onclick*="returnCalculator"]')
+.classList.add('active');
+}
+
+if (tabId === 'prepCalculator') {
+document.querySelector('button[onclick*="prepCalculator"]')
+.classList.add('active');
+}
+
 }
 
 // 初始顯示介面
