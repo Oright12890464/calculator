@@ -420,8 +420,14 @@ oninput="updatePreparedTotal()" style="flex:1;">
 <label for="perPallet">板數：</label>
 <input type="number" id="perPallet" min="1" placeholder="請輸入每板單位" oninput="updateResult()" />
 <div class="buttons">
-<button id="clear" onclick="clearFields()" style="width: 100%;">清除</button>
+
+<div style="display:flex; gap:10px;">
+<button onclick="nextOrder()" style="flex:1;">下一筆</button>
+<button id="clear" onclick="clearFields()" style="flex:1;">清除</button>
+</div>
+
 <div id="result" class="result" style="display:none;"></div>
+
 </div>
 </div>
 
@@ -571,6 +577,7 @@ const prepInput = document.getElementById('prep');
 const unitInput = document.getElementById('unit');
 const perPalletInput = document.getElementById('perPallet');
 const resultDiv = document.getElementById('result');
+let lastStockQty = null;
 
 [
 totalInput,
@@ -588,6 +595,25 @@ unitInput.value = '';
 perPalletInput.value = '';
 resultDiv.textContent = '';
 resultDiv.style.display = 'none';
+}
+
+function nextOrder() {
+
+    if (lastStockQty === null) {
+        alert("請先計算一次再使用下一筆");
+        return;
+    }
+
+    // 將結存帶回總數
+    totalInput.value = lastStockQty;
+
+    // 清空備料
+    prepInput.value = "";
+
+    // 清空結果
+    resultDiv.innerHTML = "";
+    resultDiv.style.display = "none";
+
 }
 
 
@@ -670,6 +696,7 @@ result = `庫存數量：${total}支`;
 // 有備料（純數量）
 else if (prep !== null && unit === null && perPallet === null) {
 const stock = total - prep;
+lastStockQty = stock;
 result =
 `現況數量：${total}支<br>` +
 `備料數量：${prep}支<br>` +
@@ -713,6 +740,7 @@ result += ` ${remainAfterPallet}×1板`;
 // 備料 + 箱
 else if (prep !== null && unit !== null && perPallet === null) {
 const stock = total - prep;
+lastStockQty = stock;
 
 const current = convert(total);
 const prepC = convert(prep);
@@ -731,6 +759,7 @@ result = `庫存數量：${formatResult(0, stockC.boxes, stockC.units)} (${stock
 // 備料 + 板
 else if (prep !== null && perPallet !== null && unit === null) {
 const stock = total - prep;
+lastStockQty = stock;
 
 const current = convert(total);
 const prepC = convert(prep);
@@ -749,6 +778,7 @@ result = `庫存數量：${formatResult(stockC.pallets, 0, stockC.units)} (${sto
 // ✅ 全部都有
 else if (prep !== null && unit !== null && perPallet !== null) {
 const stock = total - prep;
+lastStockQty = stock;
 
 const current = convert(total);
 const prepC = convert(prep);
