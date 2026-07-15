@@ -341,7 +341,7 @@
 <input type="number" id="returnWeight" step="any" min="0" placeholder="請輸入實際退料重量" oninput="calculateRightAuto()">
 </label>
 
-<label>換算貼紙張數：
+<label>貼紙張數：
 <input type="number" id="calculatedResult" class="readonly" readonly>
 </label>
 
@@ -380,7 +380,7 @@ oninput="updatePreparedTotal()" style="flex:1;">
 <input type="number" id="workOrder" min="0" placeholder="請輸入工單製令數">
 </label>
 
-<label>實際退料數：
+<label>貼紙退料數：
 <input type="number" id="actualReturn" class="readonly" readonly>
 <span class="checkbox-group">
 <label class="checkbox-option"><input type="checkbox" id="manualToggle" onclick="toggleManualInput()"> 勾選可自行輸入</label>
@@ -769,6 +769,7 @@ const totalWeight = parseFloat(document.getElementById('totalWeight').value) || 
 const coreWeight = parseFloat(document.getElementById('coreWeight').value) || 0;
 const originalRolls = parseInt(document.getElementById('originalRolls').value) || 0;
 const returnWeight = parseFloat(document.getElementById('returnWeight').value) || 0;
+const manualMode = document.getElementById('manualToggle').checked;
 
 if (totalWeight <= coreWeight || originalRolls <= 0 || returnWeight < coreWeight) {
 document.getElementById('calculatedResult').value = '';
