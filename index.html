@@ -350,8 +350,28 @@
 <div class="section-title">
 藍單製令填寫
 </div>
+
+
+<!-- 沿用退料按鈕 -->
+
+<button
+    id="reuseToggleBtn"
+    type="button"
+    onclick="toggleReuseMode()"
+    style="
+    width:100%;
+    display:block;
+    margin:15px auto;
+    ">
+
+    沿用退料換算
+
+</button>
+
+
 <label>貼紙備料數：
 <div style="display:flex; gap:8px; margin-top:4px; width:100%;">
+
 <input type="number" id="prepared1" min="0" placeholder="批號1"
 oninput="updatePreparedTotal()" style="flex:1;">
 
@@ -360,51 +380,111 @@ oninput="updatePreparedTotal()" style="flex:1;">
 
 <input type="number" id="prepared3" min="0" placeholder="批號3"
 oninput="updatePreparedTotal()" style="flex:1;">
+
 </div>
-
-<span class="checkbox-group">
-<label class="checkbox-option">
-<input type="checkbox" id="x2Toggle"> ｘ2
-</label>
-
-<label class="checkbox-option">
-<input type="checkbox" id="x12Toggle"> ｘ12（特殊種類使用）
-</label>
-</span>
-</label>
 </label>
 <label>貼紙備料總數：
 <input type="number" id="preparedTotal" class="readonly" readonly placeholder="總備料數量">
 </label>
 
-<label>工單製令數：
+<div id="workOrderArea">
+
+<label id="workOrderLabel">
+工單製令數：
+</label>
+
+<div style="display:flex; gap:10px; width:100%;">
+
 <input
     type="number"
-    id="workOrder"
+    id="workOrder1"
     min="0"
-    placeholder="請輸入工單製令數"
-    oninput="updatePreparedTotal()">
-</label>
+    placeholder="工單1製令數"
+    oninput="updateReuseShouldReturn()"
+    style="flex:1;">
 
-<label>貼紙應退數：
-<input type="number" id="stockRemain" class="readonly" readonly placeholder="貼紙應退數量">
 
-</label>
+<input
+    type="number"
+    id="workOrder2"
+    min="0"
+    placeholder="工單2製令數"
+    oninput="updateReuseShouldReturn()"
+    style="flex:1;">
 
-<label>貼紙退料數：
-<input type="number" id="actualReturn" placeholder="實際退料秤重後換算後量">
-</label>
-
-<label>藍單退料數：
-<input type="number" id="blueReturn" min="0" placeholder="請輸入藍單料數">
-</label>
-
-<div class="button-group">
-<button onclick="calculateLeft()">計算</button>
-<button onclick="clearAll()">清除</button>
 </div>
 
-<div class="result" id="leftResult" style="display:none;"></div>
+</div>
+
+
+<div id="blueReturnArea">
+
+<label id="blueReturnLabel">
+藍單退料數：
+</label>
+
+
+<div style="display:flex; gap:10px; width:100%;">
+
+<input
+    type="number"
+    id="blueReturn1"
+    min="0"
+    placeholder="工單1退料數"
+    style="flex:1;">
+
+
+<input
+    type="number"
+    id="blueReturn2"
+    min="0"
+    placeholder="工單2退料數"
+    style="flex:1;">
+
+</div>
+
+</div>
+
+
+
+<label>
+貼紙應退數：
+
+<input
+    type="number"
+    id="stockRemain"
+    class="readonly"
+    readonly
+    placeholder="貼紙應退數量">
+
+</label>
+
+
+
+<label>
+貼紙退料數：
+
+<input
+    type="number"
+    id="actualReturn"
+    placeholder="實際退料秤重後換算後量">
+
+</label>
+<button onclick="calculateLeft()">
+計算
+</button>
+
+<button onclick="clearAll()">
+清除
+</button>
+
+</div>
+
+
+<div
+id="leftResult"
+class="result"
+style="display:none;">
 </div>
 
 <!-- 數量換算 -->
@@ -573,6 +653,122 @@ if (tabId === 'prepCalculator') {
 document.querySelector('button[onclick*="prepCalculator"]')
 .classList.add('active');
 }
+
+}
+
+function toggleReuseMode(){
+
+    const workArea = document.getElementById("workOrderArea");
+    const blueArea = document.getElementById("blueReturnArea");
+
+
+    // =========================
+    // 如果目前已經分裂 → 恢復
+    // =========================
+    if(document.getElementById("workOrder1")){
+
+    window.reuseWorkOrder = null;
+    window.reuseBlueReturn = null;
+
+
+        workArea.innerHTML = `
+
+        <label id="workOrderLabel">
+        工單製令數：
+
+        <input
+            type="number"
+            id="workOrder"
+            min="0"
+            placeholder="請輸入工單製令數"
+            oninput="updatePreparedTotal()">
+
+        </label>
+
+        `;
+
+
+        blueArea.innerHTML = `
+
+        <label id="blueReturnLabel">
+        藍單退料數：
+
+        <input
+            type="number"
+            id="blueReturn"
+            min="0"
+            placeholder="請輸入藍單料數">
+
+        </label>
+
+        `;
+
+        return;
+    }
+
+
+
+    // =========================
+    // 原本模式 → 分裂
+    // =========================
+
+workArea.innerHTML = `
+
+
+<label>
+工單製令數：
+</label>
+
+<div style="display:flex; gap:10px; width:100%;">
+
+    <input
+    type="number"
+    id="workOrder1"
+    min="0"
+    placeholder="工單1"
+    oninput="updateReuseShouldReturn()"
+    style="flex:1;">
+
+
+    <input
+    type="number"
+    id="workOrder2"
+    min="0"
+    placeholder="工單2"
+    oninput="updateReuseShouldReturn()"
+    style="flex:1;">
+
+</div>
+
+`;
+
+blueArea.innerHTML = `
+
+<label>
+藍單退料數：
+</label>
+
+
+<div style="display:flex; gap:10px; width:100%;">
+
+    <input
+    type="number"
+    id="blueReturn1"
+    min="0"
+    placeholder="工單1"
+    style="flex:1;">
+
+
+    <input
+    type="number"
+    id="blueReturn2"
+    min="0"
+    placeholder="工單2"
+    style="flex:1;">
+
+</div>
+
+`;
 
 }
 
@@ -892,6 +1088,33 @@ function updatePreparedTotal() {
     document.getElementById('stockRemain').value = prepared - workOrder;
 }
 
+// =========================
+// 沿用模式即時更新應退數
+// =========================
+
+function updateReuseShouldReturn(){
+
+    const prepared =
+    parseInt(document.getElementById("preparedTotal").value) || 0;
+
+
+    const work1 =
+    parseInt(document.getElementById("workOrder1")?.value) || 0;
+
+
+    const work2 =
+    parseInt(document.getElementById("workOrder2")?.value) || 0;
+
+
+    const shouldReturn =
+    prepared - (work1 + work2);
+
+
+    document.getElementById("stockRemain").value =
+    shouldReturn > 0 ? shouldReturn : 0;
+
+}
+
 
 let actualReturnManual = false;
 
@@ -933,113 +1156,418 @@ function calculateRightAuto() {
 
 function calculateLeft() {
 
-    const prepared = parseInt(document.getElementById('preparedTotal').value) || 0;
-    const workOrder = parseInt(document.getElementById('workOrder').value) || 0;
-    const actualReturn = parseInt(document.getElementById('actualReturn').value) || 0;
-    const blueReturnInput = parseInt(document.getElementById('blueReturn').value) || 0;
 
-    const x2Checked = document.getElementById('x2Toggle').checked;
-    const x12Checked = document.getElementById('x12Toggle').checked;
+    // =========================
+    // 非沿用模式清除沿用記憶
+    // =========================
+    if(!document.getElementById("workOrder1")){
 
-    const blueReturn = x2Checked ? blueReturnInput * 2 : blueReturnInput;
-    const blueReturnX12 = x12Checked ? blueReturnInput * 12 : blueReturn;
+        window.reuseDetail = null;
+        window.reuseWorkOrder = null;
+        window.reuseBlueReturn = null;
 
-    const shouldReturn = prepared - workOrder;
+    }
+
+
+    const prepared =
+    parseInt(document.getElementById('preparedTotal').value) || 0;
+
+
+    // =========================
+    // 沿用模式分開計算
+    // =========================
+
+    if(document.getElementById("workOrder1")){
+
+
+        const work1 =
+        parseInt(document.getElementById("workOrder1").value) || 0;
+
+
+        const work2 =
+        parseInt(document.getElementById("workOrder2").value) || 0;
+
+
+        const blue1 =
+        parseInt(document.getElementById("blueReturn1").value) || 0;
+
+
+        const blue2 =
+        parseInt(document.getElementById("blueReturn2").value) || 0;
+
+
+
+        const totalWork =
+        work1 + work2;
+
+
+        const totalBlue =
+        blue1 + blue2;
+
+
+
+        window.reuseWorkOrder = totalWork;
+
+        window.reuseBlueReturn = totalBlue;
+
+
+
+        window.reuseDetail = {
+
+            work1: work1,
+
+            work2: work2,
+
+            blue1: blue1,
+
+            blue2: blue2
+
+        };
+
+    }
+
+
+
+    const workOrder =
+    window.reuseWorkOrder ??
+    (parseInt(document.getElementById('workOrder').value) || 0);
+
+
+
+    const actualReturn =
+    parseInt(document.getElementById('actualReturn').value) || 0;
+
+
+
+    const blueReturn =
+    window.reuseBlueReturn ??
+    (parseInt(document.getElementById('blueReturn').value) || 0);
+
+
+
+    const shouldReturn =
+    prepared - workOrder;
+
+    // 顯示貼紙應退數
+    document.getElementById("stockRemain").value = shouldReturn;
 
     let goodReturn = 0;
+
     let badReturn = 0;
+
     let requirePick = 0;
+
     let giftReturn = 0;
+
+
+
+    // =========================
+    // 正常退料計算
+    // =========================
 
     if (actualReturn > shouldReturn) {
 
-        goodReturn = actualReturn - shouldReturn;
 
-        if (goodReturn > blueReturnX12) {
-            giftReturn = goodReturn - blueReturnX12;
-            goodReturn = blueReturnX12;
+        goodReturn =
+        actualReturn - shouldReturn;
+
+
+
+        if (goodReturn > blueReturn) {
+
+
+            giftReturn =
+            goodReturn - blueReturn;
+
+
+            goodReturn =
+            blueReturn;
+
+
             badReturn = 0;
+
+
         } else {
-            badReturn = blueReturnX12 - goodReturn;
+
+
+            badReturn =
+            blueReturn - goodReturn;
+
+
         }
+
+
 
     } else if (actualReturn < shouldReturn) {
 
-        requirePick = shouldReturn - actualReturn;
-        badReturn = blueReturnX12 + requirePick;
+
+        requirePick =
+        shouldReturn - actualReturn;
+
+
+        badReturn =
+        blueReturn + requirePick;
+
+
 
     } else {
 
-        badReturn = blueReturnX12;
+
+        badReturn =
+        blueReturn;
+
 
     }
 
-    requirePick = Math.max(requirePick, 0);
-    goodReturn = Math.max(goodReturn, 0);
-    badReturn = Math.max(badReturn, 0);
-    giftReturn = Math.max(giftReturn, 0);
 
-    const outputLines = [
-        `領料單: ${requirePick}`,
-        `藍單良品: ${goodReturn}`,
-        `藍單不良品: ${badReturn}`
-    ];
 
-    if (giftReturn > 0) {
-        outputLines.push(`贈品: ${giftReturn} 如果多太多就入進去`);
+    // =========================
+    // 防止負數
+    // =========================
+
+    requirePick = Math.max(requirePick,0);
+
+    goodReturn = Math.max(goodReturn,0);
+
+    badReturn = Math.max(badReturn,0);
+
+    giftReturn = Math.max(giftReturn,0);
+
+
+
+
+
+
+
+    let outputLines = [];
+
+
+
+// =========================
+// 沿用模式結果
+// =========================
+
+if(window.reuseDetail){
+
+    const detail = window.reuseDetail;
+
+
+    // 工單1先吃自己的藍單退料
+    let work1Bad = detail.blue1;
+
+
+    // 剩餘給工單2
+    let work2Bad = badReturn - work1Bad;
+
+
+    if(work2Bad < 0){
+        work2Bad = 0;
     }
 
-    const leftResultDiv = document.getElementById('leftResult');
-    leftResultDiv.textContent = outputLines.join('\n');
-    leftResultDiv.style.display = 'block';
+
+
+    outputLines.push(
+
+        "【工單1】",
+
+        `領料單(白單): 0`,
+
+        `藍單良品(左): 0`,
+
+        `藍單不良品(右): ${work1Bad}`,
+
+        ""
+
+    );
+
+
+    outputLines.push(
+
+        "【工單2】",
+
+        `領料單(白單): ${requirePick}`,
+
+        `藍單良品(左): ${goodReturn}`,
+
+        `藍單不良品(右): ${work2Bad}`
+
+    );
+
+
 }
+
+    // =========================
+    // 一般模式結果
+    // =========================
+
+    else{
+
+
+        outputLines.push(
+
+            `領料單(白單): ${requirePick}`,
+
+            `藍單良品(左): ${goodReturn}`,
+
+            `藍單不良品(右): ${badReturn}`
+
+        );
+
+
+    }
+
+
+
+    // =========================
+    // 贈品
+    // =========================
+
+    if(giftReturn > 0){
+
+
+        outputLines.push(
+
+            `贈品: ${giftReturn} 如果多太多就入進去(物料倉)`
+
+        );
+
+
+    }
+
+
+
+    const leftResultDiv =
+    document.getElementById('leftResult');
+
+
+
+    leftResultDiv.textContent =
+    outputLines.join('\n');
+
+
+
+    leftResultDiv.style.display =
+    'block';
+
+
+}
+
+// =========================
+// 清除全部
+// =========================
 
 function clearAll() {
 
-    const inputs = document.querySelectorAll('input[type=number]');
+    const inputs =
+    document.querySelectorAll('input[type=number]');
+
 
     inputs.forEach(input => {
+
         input.value = '';
+
     });
 
-    document.getElementById('x2Toggle').checked = false;
-    document.getElementById('x12Toggle').checked = false;
+
 
     document.getElementById('leftResult').style.display = 'none';
 
+
     lastStockQty = null;
 
-    // 重置貼紙退料數手動修改狀態
+
+    // 重置貼紙退料手動修改狀態
     actualReturnManual = false;
+
+
+
+    // 清除沿用模式暫存
+
+    window.reuseWorkOrder = null;
+
+    window.reuseBlueReturn = null;
+
+    window.reuseDetail = null;
+
+
 }
 
 
 
-const calcDisplay = document.getElementById('calcDisplay');
-const calcBtns = document.querySelectorAll('.calc-btn');
+
+// =========================
+// 計算機
+// =========================
+
+const calcDisplay =
+document.getElementById('calcDisplay');
+
+
+const calcBtns =
+document.querySelectorAll('.calc-btn');
+
+
 
 calcBtns.forEach(btn => {
-btn.addEventListener('click', () => {
-if (btn.textContent === '=') {
-try {
-calcDisplay.value = eval(calcDisplay.value);
-} catch (error) {
-calcDisplay.value = '錯誤';
-}
-} else if (btn.textContent === 'C') {
-calcDisplay.value = '';
-} else {
-calcDisplay.value += btn.textContent;
-}
+
+
+    btn.addEventListener('click', () => {
+
+
+        if (btn.textContent === '=') {
+
+
+            try {
+
+
+                calcDisplay.value =
+                eval(calcDisplay.value);
+
+
+            } catch (error) {
+
+
+                calcDisplay.value =
+                '錯誤';
+
+
+            }
+
+
+
+        } else if (btn.textContent === 'C') {
+
+
+            calcDisplay.value = '';
+
+
+
+        } else {
+
+
+            calcDisplay.value +=
+            btn.textContent;
+
+
+        }
+
+
+    });
+
+
 });
-});
+
 
 
 </script>
 
 <div class="footer-credit">
+
 資材倉儲課阿哲製作
+
 </div>
 
+
 </body>
+
 </html>
